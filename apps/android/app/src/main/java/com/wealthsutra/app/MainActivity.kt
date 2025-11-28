@@ -104,7 +104,7 @@ class MainActivity : AppCompatActivity() {
         //   Find your IP: Windows: ipconfig | findstr IPv4
         //                  Mac/Linux: ifconfig or ip addr
         // For production: Replace with your deployed frontend URL
-        val frontendUrl = "http://10.0.2.2:3000"  // Emulator - maps to host's localhost:3000
+        val frontendUrl = "https://8611837be0f4.ngrok-free.app/"  // Emulator - maps to host's localhost:3000
         // val frontendUrl = "http://YOUR_COMPUTER_IP:3000"  // Physical device - replace YOUR_COMPUTER_IP
         
         android.util.Log.d("WebView", "Attempting to load URL: $frontendUrl")
