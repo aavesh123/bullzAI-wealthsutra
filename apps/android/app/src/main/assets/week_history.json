@@ -1,0 +1,213 @@
+[
+  {
+    "timestamp": "2024-11-22T10:00:00.000Z",
+    "amount": 450,
+    "direction": "credit",
+    "channel": "UPI",
+    "merchant": "Swiggy",
+    "category": "income",
+    "source": "mock_sms_demo",
+    "rawText": "You received ₹450.00 from Swiggy via UPI"
+  },
+  {
+    "timestamp": "2024-11-22T14:30:00.000Z",
+    "amount": 120,
+    "direction": "debit",
+    "channel": "UPI",
+    "merchant": "Petrol Pump",
+    "category": "fuel",
+    "source": "mock_sms_demo",
+    "rawText": "You paid ₹120.00 to Petrol Pump via UPI"
+  },
+  {
+    "timestamp": "2024-11-22T19:00:00.000Z",
+    "amount": 80,
+    "direction": "debit",
+    "channel": "UPI",
+    "merchant": "Restaurant",
+    "category": "food",
+    "source": "mock_sms_demo",
+    "rawText": "You paid ₹80.00 to Restaurant via UPI"
+  },
+  {
+    "timestamp": "2024-11-23T10:00:00.000Z",
+    "amount": 380,
+    "direction": "credit",
+    "channel": "UPI",
+    "merchant": "Swiggy",
+    "category": "income",
+    "source": "mock_sms_demo",
+    "rawText": "You received ₹380.00 from Swiggy via UPI"
+  },
+  {
+    "timestamp": "2024-11-23T14:30:00.000Z",
+    "amount": 150,
+    "direction": "debit",
+    "channel": "UPI",
+    "merchant": "Petrol Pump",
+    "category": "fuel",
+    "source": "mock_sms_demo",
+    "rawText": "You paid ₹150.00 to Petrol Pump via UPI"
+  },
+  {
+    "timestamp": "2024-11-23T19:00:00.000Z",
+    "amount": 100,
+    "direction": "debit",
+    "channel": "UPI",
+    "merchant": "Grocery Store",
+    "category": "food",
+    "source": "mock_sms_demo",
+    "rawText": "You paid ₹100.00 to Grocery Store via UPI"
+  },
+  {
+    "timestamp": "2024-11-24T10:00:00.000Z",
+    "amount": 520,
+    "direction": "credit",
+    "channel": "UPI",
+    "merchant": "Swiggy",
+    "category": "income",
+    "source": "mock_sms_demo",
+    "rawText": "You received ₹520.00 from Swiggy via UPI"
+  },
+  {
+    "timestamp": "2024-11-24T14:30:00.000Z",
+    "amount": 110,
+    "direction": "debit",
+    "channel": "UPI",
+    "merchant": "Petrol Pump",
+    "category": "fuel",
+    "source": "mock_sms_demo",
+    "rawText": "You paid ₹110.00 to Petrol Pump via UPI"
+  },
+  {
+    "timestamp": "2024-11-24T19:00:00.000Z",
+    "amount": 90,
+    "direction": "debit",
+    "channel": "UPI",
+    "merchant": "Restaurant",
+    "category": "food",
+    "source": "mock_sms_demo",
+    "rawText": "You paid ₹90.00 to Restaurant via UPI"
+  },
+  {
+    "timestamp": "2024-11-25T10:00:00.000Z",
+    "amount": 410,
+    "direction": "credit",
+    "channel": "UPI",
+    "merchant": "Swiggy",
+    "category": "income",
+    "source": "mock_sms_demo",
+    "rawText": "You received ₹410.00 from Swiggy via UPI"
+  },
+  {
+    "timestamp": "2024-11-25T14:30:00.000Z",
+    "amount": 130,
+    "direction": "debit",
+    "channel": "UPI",
+    "merchant": "Petrol Pump",
+    "category": "fuel",
+    "source": "mock_sms_demo",
+    "rawText": "You paid ₹130.00 to Petrol Pump via UPI"
+  },
+  {
+    "timestamp": "2024-11-25T19:00:00.000Z",
+    "amount": 70,
+    "direction": "debit",
+    "channel": "UPI",
+    "merchant": "Restaurant",
+    "category": "food",
+    "source": "mock_sms_demo",
+    "rawText": "You paid ₹70.00 to Restaurant via UPI"
+  },
+  {
+    "timestamp": "2024-11-26T10:00:00.000Z",
+    "amount": 480,
+    "direction": "credit",
+    "channel": "UPI",
+    "merchant": "Swiggy",
+    "category": "income",
+    "source": "mock_sms_demo",
+    "rawText": "You received ₹480.00 from Swiggy via UPI"
+  },
+  {
+    "timestamp": "2024-11-26T14:30:00.000Z",
+    "amount": 140,
+    "direction": "debit",
+    "channel": "UPI",
+    "merchant": "Petrol Pump",
+    "category": "fuel",
+    "source": "mock_sms_demo",
+    "rawText": "You paid ₹140.00 to Petrol Pump via UPI"
+  },
+  {
+    "timestamp": "2024-11-26T19:00:00.000Z",
+    "amount": 85,
+    "direction": "debit",
+    "channel": "UPI",
+    "merchant": "Restaurant",
+    "category": "food",
+    "source": "mock_sms_demo",
+    "rawText": "You paid ₹85.00 to Restaurant via UPI"
+  },
+  {
+    "timestamp": "2024-11-27T10:00:00.000Z",
+    "amount": 360,
+    "direction": "credit",
+    "channel": "UPI",
+    "merchant": "Swiggy",
+    "category": "income",
+    "source": "mock_sms_demo",
+    "rawText": "You received ₹360.00 from Swiggy via UPI"
+  },
+  {
+    "timestamp": "2024-11-27T14:30:00.000Z",
+    "amount": 125,
+    "direction": "debit",
+    "channel": "UPI",
+    "merchant": "Petrol Pump",
+    "category": "fuel",
+    "source": "mock_sms_demo",
+    "rawText": "You paid ₹125.00 to Petrol Pump via UPI"
+  },
+  {
+    "timestamp": "2024-11-27T19:00:00.000Z",
+    "amount": 95,
+    "direction": "debit",
+    "channel": "UPI",
+    "merchant": "Grocery Store",
+    "category": "food",
+    "source": "mock_sms_demo",
+    "rawText": "You paid ₹95.00 to Grocery Store via UPI"
+  },
+  {
+    "timestamp": "2024-11-28T10:00:00.000Z",
+    "amount": 440,
+    "direction": "credit",
+    "channel": "UPI",
+    "merchant": "Swiggy",
+    "category": "income",
+    "source": "mock_sms_demo",
+    "rawText": "You received ₹440.00 from Swiggy via UPI"
+  },
+  {
+    "timestamp": "2024-11-28T14:30:00.000Z",
+    "amount": 115,
+    "direction": "debit",
+    "channel": "UPI",
+    "merchant": "Petrol Pump",
+    "category": "fuel",
+    "source": "mock_sms_demo",
+    "rawText": "You paid ₹115.00 to Petrol Pump via UPI"
+  },
+  {
+    "timestamp": "2024-11-28T19:00:00.000Z",
+    "amount": 75,
+    "direction": "debit",
+    "channel": "UPI",
+    "merchant": "Restaurant",
+    "category": "food",
+    "source": "mock_sms_demo",
+    "rawText": "You paid ₹75.00 to Restaurant via UPI"
+  }
+]
+

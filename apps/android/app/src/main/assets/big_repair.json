@@ -1,0 +1,13 @@
+[
+  {
+    "timestamp": "2024-11-29T12:00:00.000Z",
+    "amount": 1800,
+    "direction": "debit",
+    "channel": "UPI",
+    "merchant": "Bike Repair Shop",
+    "category": "other",
+    "source": "mock_sms_demo",
+    "rawText": "You paid ₹1800.00 to Bike Repair Shop via UPI"
+  }
+]
+

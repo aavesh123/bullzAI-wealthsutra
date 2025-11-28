@@ -1,0 +1,35 @@
+com.wealthsutra.app-constraintlayout-2.1.4-0 C:\Users\Avesh\.gradle\caches\transforms-3\064965ac0cd89ed3842aaa24fa5c24f9\transformed\constraintlayout-2.1.4\res
+com.wealthsutra.app-jetified-emoji2-views-helper-1.2.0-1 C:\Users\Avesh\.gradle\caches\transforms-3\07c06dd7f2e83a05894ccda90acf0cf3\transformed\jetified-emoji2-views-helper-1.2.0\res
+com.wealthsutra.app-drawerlayout-1.1.1-2 C:\Users\Avesh\.gradle\caches\transforms-3\11657b9e2b2f98999cd61da7d06a8523\transformed\drawerlayout-1.1.1\res
+com.wealthsutra.app-lifecycle-livedata-2.6.1-3 C:\Users\Avesh\.gradle\caches\transforms-3\1a623cf9963888290749e16871ca2777\transformed\lifecycle-livedata-2.6.1\res
+com.wealthsutra.app-jetified-activity-1.8.0-4 C:\Users\Avesh\.gradle\caches\transforms-3\1abc351c679ead4f66e2ec7e25a90993\transformed\jetified-activity-1.8.0\res
+com.wealthsutra.app-cardview-1.0.0-5 C:\Users\Avesh\.gradle\caches\transforms-3\2a9568361a2384d1148eeb6cc0998b89\transformed\cardview-1.0.0\res
+com.wealthsutra.app-webkit-1.8.0-6 C:\Users\Avesh\.gradle\caches\transforms-3\325a3badd910982263753735c010f469\transformed\webkit-1.8.0\res
+com.wealthsutra.app-recyclerview-1.1.0-7 C:\Users\Avesh\.gradle\caches\transforms-3\37cd480e2e4fbfff1a9ff7e5daa34ff4\transformed\recyclerview-1.1.0\res
+com.wealthsutra.app-jetified-viewpager2-1.0.0-8 C:\Users\Avesh\.gradle\caches\transforms-3\38f07afb4d1816c124af21a8fff641aa\transformed\jetified-viewpager2-1.0.0\res
+com.wealthsutra.app-transition-1.2.0-9 C:\Users\Avesh\.gradle\caches\transforms-3\4f87ed100e8e8967408a88b3dba5eb1a\transformed\transition-1.2.0\res
+com.wealthsutra.app-core-1.12.0-10 C:\Users\Avesh\.gradle\caches\transforms-3\5fa5ece9454eea6f58deaaac3f2d4563\transformed\core-1.12.0\res
+com.wealthsutra.app-jetified-lifecycle-viewmodel-savedstate-2.6.1-11 C:\Users\Avesh\.gradle\caches\transforms-3\5fce21f4138725e5111c4e4a176cd6d7\transformed\jetified-lifecycle-viewmodel-savedstate-2.6.1\res
+com.wealthsutra.app-coordinatorlayout-1.1.0-12 C:\Users\Avesh\.gradle\caches\transforms-3\742e6aff64350d03431179fdfe1c2c54\transformed\coordinatorlayout-1.1.0\res
+com.wealthsutra.app-lifecycle-livedata-core-2.6.1-13 C:\Users\Avesh\.gradle\caches\transforms-3\8493bb7c9bbd332103bb847eb7354f86\transformed\lifecycle-livedata-core-2.6.1\res
+com.wealthsutra.app-jetified-emoji2-1.2.0-14 C:\Users\Avesh\.gradle\caches\transforms-3\8940f98083fa9427ae338d7e080140ca\transformed\jetified-emoji2-1.2.0\res
+com.wealthsutra.app-jetified-startup-runtime-1.1.1-15 C:\Users\Avesh\.gradle\caches\transforms-3\8f8b553cc0c1fa38e6e6fa0cb5770bdb\transformed\jetified-startup-runtime-1.1.1\res
+com.wealthsutra.app-lifecycle-runtime-2.6.1-16 C:\Users\Avesh\.gradle\caches\transforms-3\92afc956e1884c133a1aefd36119f74b\transformed\lifecycle-runtime-2.6.1\res
+com.wealthsutra.app-material-1.10.0-17 C:\Users\Avesh\.gradle\caches\transforms-3\a1551826d5c7e1ec75ed8b59c5900b0e\transformed\material-1.10.0\res
+com.wealthsutra.app-jetified-profileinstaller-1.3.0-18 C:\Users\Avesh\.gradle\caches\transforms-3\a7ca8d0818e3de3ecb6c5b8b52f38279\transformed\jetified-profileinstaller-1.3.0\res
+com.wealthsutra.app-jetified-core-ktx-1.12.0-19 C:\Users\Avesh\.gradle\caches\transforms-3\ab8186f18a6dd1a8d9a3abb54c05332f\transformed\jetified-core-ktx-1.12.0\res
+com.wealthsutra.app-jetified-appcompat-resources-1.6.1-20 C:\Users\Avesh\.gradle\caches\transforms-3\b4a6c24a8270bf9d29bcd1e924657cfe\transformed\jetified-appcompat-resources-1.6.1\res
+com.wealthsutra.app-core-runtime-2.2.0-21 C:\Users\Avesh\.gradle\caches\transforms-3\b70fb94dc846cbec9dc85655fe4d5970\transformed\core-runtime-2.2.0\res
+com.wealthsutra.app-jetified-lifecycle-process-2.6.1-22 C:\Users\Avesh\.gradle\caches\transforms-3\bc7b30df88dc1de6ecc023e8cab9de9f\transformed\jetified-lifecycle-process-2.6.1\res
+com.wealthsutra.app-fragment-1.3.6-23 C:\Users\Avesh\.gradle\caches\transforms-3\e9c5e6ce87ef198779afddf4f2c6c258\transformed\fragment-1.3.6\res
+com.wealthsutra.app-jetified-annotation-experimental-1.3.0-24 C:\Users\Avesh\.gradle\caches\transforms-3\ed789f370c677b21e375ceaa669751d6\transformed\jetified-annotation-experimental-1.3.0\res
+com.wealthsutra.app-lifecycle-viewmodel-2.6.1-25 C:\Users\Avesh\.gradle\caches\transforms-3\eda15cf4a34e637913c21e50c494bc9d\transformed\lifecycle-viewmodel-2.6.1\res
+com.wealthsutra.app-jetified-savedstate-1.2.1-26 C:\Users\Avesh\.gradle\caches\transforms-3\f24bd2091b7dd5e7386323c0f9e78dd8\transformed\jetified-savedstate-1.2.1\res
+com.wealthsutra.app-appcompat-1.6.1-27 C:\Users\Avesh\.gradle\caches\transforms-3\f749fa0d9044b049beb547b2751a6f2f\transformed\appcompat-1.6.1\res
+com.wealthsutra.app-pngs-28 E:\Project\personal project\BULLZAI\bullzAI-wealthsutra\apps\android\app\build\generated\res\pngs\debug
+com.wealthsutra.app-resValues-29 E:\Project\personal project\BULLZAI\bullzAI-wealthsutra\apps\android\app\build\generated\res\resValues\debug
+com.wealthsutra.app-packageDebugResources-30 E:\Project\personal project\BULLZAI\bullzAI-wealthsutra\apps\android\app\build\intermediates\incremental\debug\packageDebugResources\merged.dir
+com.wealthsutra.app-packageDebugResources-31 E:\Project\personal project\BULLZAI\bullzAI-wealthsutra\apps\android\app\build\intermediates\incremental\debug\packageDebugResources\stripped.dir
+com.wealthsutra.app-merged_res-32 E:\Project\personal project\BULLZAI\bullzAI-wealthsutra\apps\android\app\build\intermediates\merged_res\debug
+com.wealthsutra.app-debug-33 E:\Project\personal project\BULLZAI\bullzAI-wealthsutra\apps\android\app\src\debug\res
+com.wealthsutra.app-main-34 E:\Project\personal project\BULLZAI\bullzAI-wealthsutra\apps\android\app\src\main\res
