@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsNumber, IsEnum, IsDateString, IsOptional } from 'class-validator';
+import { IsString, IsNumber, IsEnum, IsDateString, IsOptional, IsArray, ValidateNested, ArrayMinSize } from 'class-validator';
+import { Type } from 'class-transformer';
 
 export class TransactionEventDto {
   @ApiProperty()
@@ -46,6 +47,10 @@ export class IngestTransactionsDto {
   userId: string;
 
   @ApiProperty({ type: [TransactionEventDto] })
+  @IsArray()
+  @ArrayMinSize(1)
+  @ValidateNested({ each: true })
+  @Type(() => TransactionEventDto)
   events: TransactionEventDto[];
 }
 

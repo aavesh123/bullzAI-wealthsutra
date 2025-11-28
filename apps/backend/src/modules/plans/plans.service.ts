@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { Plan, PlanDocument } from '../../schemas/plan.schema';
 import { PlanResponseDto } from './dto/plan-response.dto';
 
@@ -26,8 +26,10 @@ export class PlansService {
   }
 
   async findActiveByUserId(userId: string): Promise<PlanResponseDto | null> {
+    // Convert string userId to ObjectId for proper querying
+    const userObjectId = new Types.ObjectId(userId);
     const plan = await this.planModel.findOne({
-      userId,
+      userId: userObjectId,
       status: 'active',
     });
 
@@ -46,8 +48,10 @@ export class PlansService {
   }
 
   async deactivateAll(userId: string): Promise<void> {
+    // Convert string userId to ObjectId for proper querying
+    const userObjectId = new Types.ObjectId(userId);
     await this.planModel.updateMany(
-      { userId, status: 'active' },
+      { userId: userObjectId, status: 'active' },
       { status: 'inactive' },
     );
   }

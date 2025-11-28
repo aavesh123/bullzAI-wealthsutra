@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { Goal, GoalDocument } from '../../schemas/goal.schema';
 import { CreateGoalDto } from './dto/create-goal.dto';
 import { GoalResponseDto } from './dto/goal-response.dto';
@@ -14,6 +14,7 @@ export class GoalsService {
   async create(createGoalDto: CreateGoalDto): Promise<GoalResponseDto> {
     const goal = await this.goalModel.create({
       ...createGoalDto,
+      userId: new Types.ObjectId(createGoalDto.userId),
       targetDate: new Date(createGoalDto.targetDate),
       status: createGoalDto.status || 'active',
     });
@@ -29,7 +30,9 @@ export class GoalsService {
   }
 
   async findByUserId(userId: string): Promise<GoalResponseDto[]> {
-    const goals = await this.goalModel.find({ userId }).sort({ createdAt: -1 });
+    // Convert string userId to ObjectId for proper querying
+    const userObjectId = new Types.ObjectId(userId);
+    const goals = await this.goalModel.find({ userId: userObjectId }).sort({ createdAt: -1 });
 
     return goals.map((goal) => ({
       _id: goal._id.toString(),

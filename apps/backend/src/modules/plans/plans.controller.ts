@@ -13,8 +13,15 @@ export class PlansController {
   @ApiQuery({ name: 'userId', required: true })
   @ApiResponse({
     status: 200,
-    description: 'Active plan',
+    description: 'Active plan found',
     type: PlanResponseDto,
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'No active plan found',
+    schema: {
+      type: 'null',
+    },
   })
   async getActive(@Query('userId') userId: string): Promise<PlanResponseDto | null> {
     return this.plansService.findActiveByUserId(userId);
