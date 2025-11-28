@@ -489,4 +489,3 @@ MONGODB_URI=mongodb+srv://username:password@cluster0.xxxxx.mongodb.net/wealthsut
 **Last Updated**: 2025-01-27
 **Database Version**: MongoDB Atlas (Latest)
 **ODM Version**: Mongoose 7.5.0
-
