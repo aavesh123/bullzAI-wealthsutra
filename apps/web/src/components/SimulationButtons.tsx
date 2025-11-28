@@ -1,7 +1,7 @@
 import { createSignal } from 'solid-js';
 import { requestSimulation } from '../lib/sms-bridge';
 import { getDashboard, createPlan } from '../lib/api-client';
-import { dashboard, setDashboard, plan, setPlan, setLoading, setError } from '../store/dashboardStore';
+import { setDashboard, setPlan, setLoading, setError } from '../store/dashboardStore';
 
 export default function SimulationButtons() {
   const [simulating, setSimulating] = createSignal(false);

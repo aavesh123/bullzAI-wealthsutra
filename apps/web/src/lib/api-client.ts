@@ -1,5 +1,5 @@
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:4000/api';
-const USER_ID = 'ravi';
+const USER_ID = '692a107c0a294445002f0616';
 
 export interface TransactionEvent {
   timestamp: string;
@@ -16,15 +16,11 @@ export interface DashboardResponse {
   incomeTotal: number;
   spendTotal: number;
   byCategory: Record<string, number>;
-  upcomingObligations: Array<{
-    type: string;
-    amount: number;
-    dueDate: string;
-  }>;
   projectedShortfall: number;
   healthScore: {
     score: number;
     label: string;
+    context?: string;
   };
 }
 
@@ -75,18 +71,135 @@ export async function ingestTransactions(events: TransactionEvent[]): Promise<vo
 }
 
 export async function getDashboard(): Promise<DashboardResponse> {
-  return fetchAPI<DashboardResponse>(`/dashboard?userId=${USER_ID}`);
+  interface BackendDashboardResponse {
+    incomeTotal: number;
+    spendTotal: number;
+    categories: Array<{ category: string; amount: number }>;
+    emiAmount: number;
+    rentAmount: number;
+    projectedShortfall: number;
+    healthScore: {
+      score: number;
+      label: string;
+      context: string;
+    };
+  }
+
+  const backendData = await fetchAPI<BackendDashboardResponse>(`/dashboard?userId=${USER_ID}`);
+
+  const byCategory = backendData.categories.reduce<Record<string, number>>((acc, item) => {
+    if (!item.category) {
+      return acc;
+    }
+    acc[item.category] = item.amount;
+    return acc;
+  }, {});
+
+  return {
+    incomeTotal: backendData.incomeTotal,
+    spendTotal: backendData.spendTotal,
+    byCategory,
+    projectedShortfall: backendData.projectedShortfall,
+    healthScore: backendData.healthScore,
+  };
 }
 
 export async function createPlan(
   trigger: 'initial_plan' | 'risk_adjustment'
 ): Promise<PlanResponse> {
-  return fetchAPI<PlanResponse>('/agent/plan', {
-    method: 'POST',
-    body: JSON.stringify({
-      userId: USER_ID,
-      trigger,
-    }),
-  });
+  // Backend response structure
+  interface BackendPlanResponse {
+    plan: {
+      _id: string;
+      userId: string;
+      goalId: string | null;
+      startDate: string | Date;
+      endDate: string | Date;
+      dailySavingTarget: number;
+      spendingCaps: Record<string, number>;
+      status: string;
+    };
+    coach: {
+      message: string;
+    };
+    risk: {
+      riskLevel: 'low' | 'medium' | 'high';
+      shortfallAmount: number;
+      timeframe: string;
+    };
+  }
+
+  try {
+    const backendResponse = await fetchAPI<BackendPlanResponse>('/agent/plan', {
+      method: 'POST',
+      body: JSON.stringify({
+        userId: USER_ID,
+        trigger,
+      }),
+    });
+
+    // Transform backend response to frontend format
+  // Handle dates - they might be strings or Date objects
+  let startDate: string;
+  let endDate: string;
+  
+  if (typeof backendResponse.plan.startDate === 'string') {
+    startDate = backendResponse.plan.startDate;
+  } else if (backendResponse.plan.startDate instanceof Date) {
+    startDate = backendResponse.plan.startDate.toISOString();
+  } else {
+    startDate = new Date(backendResponse.plan.startDate).toISOString();
+  }
+
+  if (typeof backendResponse.plan.endDate === 'string') {
+    endDate = backendResponse.plan.endDate;
+  } else if (backendResponse.plan.endDate instanceof Date) {
+    endDate = backendResponse.plan.endDate.toISOString();
+  } else {
+    endDate = new Date(backendResponse.plan.endDate).toISOString();
+  }
+  
+  // Calculate duration in days
+  const start = new Date(startDate);
+  const end = new Date(endDate);
+  const durationDays = Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
+
+  // Ensure IDs are strings
+  const planId = typeof backendResponse.plan._id === 'string' 
+    ? backendResponse.plan._id 
+    : String(backendResponse.plan._id);
+
+  // Ensure spending caps is an object
+  const spendingCaps = backendResponse.plan.spendingCaps || {};
+
+  // Transform to frontend format
+  const transformedPlan = {
+    plan: {
+      planId,
+      dailySavingTarget: backendResponse.plan.dailySavingTarget || 0,
+      durationDays,
+      spendingCaps,
+      startDate,
+      endDate,
+    },
+    messages: {
+      summary: `Your financial plan has been created. Daily saving target is ₹${backendResponse.plan.dailySavingTarget || 0}.`,
+      riskExplanation: `Your risk level is ${backendResponse.risk?.riskLevel || 'unknown'}. Projected shortfall: ₹${(backendResponse.risk?.shortfallAmount || 0).toLocaleString('en-IN')} in the ${backendResponse.risk?.timeframe || 'upcoming period'}.`,
+      coachIntro: backendResponse.coach?.message || 'No message available.',
+      nudges: [
+        `Save ₹${backendResponse.plan.dailySavingTarget || 0} daily`,
+        `Monitor spending in top categories`,
+        `Track progress weekly`,
+      ],
+    },
+    riskLevel: backendResponse.risk?.riskLevel || 'low',
+    shortfallAmount: backendResponse.risk?.shortfallAmount || 0,
+  };
+
+    return transformedPlan;
+  } catch (error) {
+    console.error('Error in createPlan:', error);
+    throw error;
+  }
 }
 

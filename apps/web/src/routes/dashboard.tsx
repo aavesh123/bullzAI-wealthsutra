@@ -63,7 +63,7 @@ export default function Dashboard() {
               <h2 class="text-xl font-semibold text-gray-900 mb-4">Spending by Category</h2>
               <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
                 {Object.entries(dashboard()!.byCategory).map(([category, amount]) => (
-                  <div key={category} class="bg-gray-50 rounded-lg p-4">
+                  <div class="bg-gray-50 rounded-lg p-4">
                     <div class="text-sm text-gray-600 capitalize mb-1">{category}</div>
                     <div class="text-lg font-semibold text-gray-900">
                       ₹{amount.toLocaleString('en-IN')}
@@ -72,12 +72,14 @@ export default function Dashboard() {
                 ))}
               </div>
             </div>
+          </div>
+        </Show>
 
-            {/* Plan and Coach */}
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <PlanCard plan={plan()} />
-              <CoachCard plan={plan()} />
-            </div>
+        {/* Plan and Coach - Always show when plan exists */}
+        <Show when={plan()}>
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+            <PlanCard plan={plan()!} />
+            <CoachCard plan={plan()!} />
           </div>
         </Show>
 
