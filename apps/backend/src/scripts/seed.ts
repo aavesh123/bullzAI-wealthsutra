@@ -37,6 +37,11 @@ const USERS = [
     incomeMaxPerDay: 1200,
     workDaysPerWeek: 5,
     icon: '🚴',
+    fixedExpenses: {
+      rentAmount: 12000, // Higher rent in Mumbai
+      emiAmount: 5000,   // Bike EMI for delivery work
+      schoolFeesAmount: 3000, // Child's school fees
+    },
   },
   {
     phoneNumber: '+919876500002',
@@ -48,6 +53,11 @@ const USERS = [
     incomeMaxPerDay: 800,
     workDaysPerWeek: 6,
     icon: '👷',
+    fixedExpenses: {
+      rentAmount: 8000,  // Lower rent in Delhi (shared accommodation)
+      emiAmount: 0,      // No EMI (no vehicle loan)
+      schoolFeesAmount: 2000, // Lower school fees
+    },
   },
 ];
 
@@ -101,11 +111,7 @@ async function seed() {
         incomeMinPerDay: userDef.incomeMinPerDay,
         incomeMaxPerDay: userDef.incomeMaxPerDay,
         workDaysPerWeek: userDef.workDaysPerWeek,
-        fixedExpenses: {
-          rentAmount: 10000, // Fixed amount: ₹10,000/month
-          emiAmount: 5000,   // Fixed amount: ₹5,000/month
-          schoolFeesAmount: 3000, // Fixed amount: ₹3,000/month
-        },
+        fixedExpenses: userDef.fixedExpenses,
       });
       profiles.push(profile);
       console.log(`  ✓ Created profile for ${userDef.name}`);
