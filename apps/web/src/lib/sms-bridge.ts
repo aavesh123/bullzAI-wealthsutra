@@ -41,10 +41,12 @@ window.handleSmsEvents = async (payload: TransactionEvent[] | { events: Transact
     // Ingest transactions
     await ingestTransactions(events);
 
-    // Refresh dashboard - import store dynamically to avoid circular dependency
-    const { setDashboard } = await import('../store/dashboardStore');
-    const dashboardData = await getDashboard();
-    setDashboard(dashboardData);
+    // Wait a bit for backend to process the ingested transactions
+    await new Promise(resolve => setTimeout(resolve, 500));
+
+    // Refresh dashboard using the shared function - import store dynamically to avoid circular dependency
+    const { handleDashboardRefresh } = await import('../store/dashboardStore');
+    await handleDashboardRefresh();
 
     // Optionally trigger plan adjustment if needed
     // This could be enhanced to check if a plan exists first

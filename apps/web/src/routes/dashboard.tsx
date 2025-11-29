@@ -4,23 +4,12 @@ import StatsCards from '../components/StatsCards';
 import PlanCard from '../components/PlanCard';
 import CoachCard from '../components/CoachCard';
 import SimulationButtons from '../components/SimulationButtons';
-import { getDashboard } from '../lib/api-client';
-import { dashboard, setDashboard, plan, error, setError, loading, setLoading } from '../store/dashboardStore';
+import { dashboard, plan, error, loading, handleDashboardRefresh, clearError } from '../store/dashboardStore';
 
 export default function Dashboard() {
   onMount(async () => {
     // Load dashboard data on mount
-    setLoading(true);
-    setError(null);
-    try {
-      const data = await getDashboard();
-      setDashboard(data);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load dashboard');
-      console.error('Error loading dashboard:', err);
-    } finally {
-      setLoading(false);
-    }
+    handleDashboardRefresh();
   });
 
   return (
@@ -33,7 +22,7 @@ export default function Dashboard() {
               <span class="text-red-600">⚠️</span>
               <span class="text-red-800 font-medium">{error()}</span>
               <button
-                onClick={() => setError(null)}
+                onClick={() => clearError()}
                 class="ml-auto text-red-600 hover:text-red-800"
               >
                 ✕
@@ -56,11 +45,16 @@ export default function Dashboard() {
         {/* Dashboard Content */}
         <Show when={dashboard()}>
           <div>
-            <StatsCards dashboard={dashboard()!} />
+            <StatsCards dashboard={dashboard} />
 
             {/* Fixed Expenses */}
             <div class="bg-white rounded-lg shadow p-6 mb-6">
-              <h2 class="text-xl font-semibold text-gray-900 mb-4">Fixed Monthly Expenses</h2>
+              <div class="flex items-center justify-between mb-4">
+                <h2 class="text-xl font-semibold text-gray-900">Fixed Monthly Expenses</h2>
+                <div class="text-lg font-bold text-gray-900">
+                  Total: ₹{(dashboard()!.rentAmount + dashboard()!.emiAmount + dashboard()!.schoolFeesAmount).toLocaleString('en-IN')}
+                </div>
+              </div>
               <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {dashboard()!.rentAmount > 0 && (
                   <div class="bg-blue-50 rounded-lg p-4 border border-blue-200">
@@ -96,7 +90,12 @@ export default function Dashboard() {
 
             {/* Category Breakdown */}
             <div class="bg-white rounded-lg shadow p-6 mb-6">
-              <h2 class="text-xl font-semibold text-gray-900 mb-4">Spending by Category</h2>
+              <div class="flex items-center justify-between mb-4">
+                <h2 class="text-xl font-semibold text-gray-900">Spending by Category</h2>
+                <div class="text-lg font-bold text-gray-900">
+                  Total: ₹{Object.values(dashboard()!.byCategory).reduce((sum, amount) => sum + amount, 0).toLocaleString('en-IN')}
+                </div>
+              </div>
               <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
                 {Object.entries(dashboard()!.byCategory).map(([category, amount]) => (
                   <div class="bg-gray-50 rounded-lg p-4">

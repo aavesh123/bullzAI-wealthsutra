@@ -71,7 +71,7 @@ export default function PlanCard(props: PlanCardProps) {
             <div class="text-sm text-gray-600 mb-2">Spending Caps (per day)</div>
             <div class="grid grid-cols-2 gap-2">
               {Object.entries(plan.plan.spendingCaps).map(([category, cap]) => (
-                <div key={category} class="bg-gray-50 rounded p-2">
+                <div class="bg-gray-50 rounded p-2">
                   <div class="text-xs text-gray-500 capitalize">{category}</div>
                   <div class="text-sm font-semibold text-gray-900">{formatCurrency(cap)}</div>
                 </div>

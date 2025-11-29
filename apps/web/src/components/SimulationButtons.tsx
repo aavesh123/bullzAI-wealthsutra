@@ -1,7 +1,7 @@
 import { createSignal } from 'solid-js';
 import { requestSimulation } from '../lib/sms-bridge';
-import { getDashboard, createPlan } from '../lib/api-client';
-import { setDashboard, setPlan, setLoading, setError } from '../store/dashboardStore';
+import { createPlan } from '../lib/api-client';
+import { setPlan, setLoading, setError, handleDashboardRefresh } from '../store/dashboardStore';
 
 export default function SimulationButtons() {
   const [simulating, setSimulating] = createSignal(false);
@@ -15,8 +15,7 @@ export default function SimulationButtons() {
     try {
       await requestSimulation('week_history', async () => {
         // Refresh dashboard after simulation
-        const dashboardData = await getDashboard();
-        setDashboard(dashboardData);
+        await handleDashboardRefresh();
       });
     } catch (error) {
       setError(error instanceof Error ? error.message : 'Failed to simulate week');
@@ -36,8 +35,7 @@ export default function SimulationButtons() {
       const planData = await createPlan('initial_plan');
       setPlan(planData);
       // Also refresh dashboard to get latest data
-      const dashboardData = await getDashboard();
-      setDashboard(dashboardData);
+      await handleDashboardRefresh();
     } catch (error) {
       setError(error instanceof Error ? error.message : 'Failed to build plan');
       console.error('Error building plan:', error);
@@ -53,15 +51,30 @@ export default function SimulationButtons() {
     setError(null);
 
     try {
-      await requestSimulation('big_repair', async () => {
-        // Refresh dashboard and create adjusted plan
-        const dashboardData = await getDashboard();
-        setDashboard(dashboardData);
+      // Store the current spendTotal to detect when it changes
+      const { dashboard } = await import('../store/dashboardStore');
+      const initialSpendTotal = dashboard()?.spendTotal || 0;
+      
+      await requestSimulation('big_repair');
+      
+      // Wait for handleSmsEvents to process and refresh
+      // Poll until data is updated (check if spendTotal changed)
+      let attempts = 0;
+      const maxAttempts = 15; // 7.5 seconds max wait (15 * 500ms)
+      while (attempts < maxAttempts) {
+        await new Promise(resolve => setTimeout(resolve, 500));
+        await handleDashboardRefresh();
+        const currentSpendTotal = dashboard()?.spendTotal || 0;
+        // If spendTotal changed, the repair transaction was processed
+        if (currentSpendTotal !== initialSpendTotal) {
+          break;
+        }
+        attempts++;
+      }
 
-        // Create risk-adjusted plan
-        const planData = await createPlan('risk_adjustment');
-        setPlan(planData);
-      });
+      // Create risk-adjusted plan after dashboard is updated
+      const planData = await createPlan('risk_adjustment');
+      setPlan(planData);
     } catch (error) {
       setError(error instanceof Error ? error.message : 'Failed to simulate repair');
       console.error('Error simulating repair:', error);
