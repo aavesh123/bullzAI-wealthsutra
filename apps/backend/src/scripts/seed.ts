@@ -37,6 +37,11 @@ const USERS = [
     incomeMaxPerDay: 1200,
     workDaysPerWeek: 5,
     icon: '🚴',
+    fixedExpenses: {
+      rentAmount: 12000, // Higher rent in Mumbai
+      emiAmount: 5000,   // Bike EMI for delivery work
+      schoolFeesAmount: 3000, // Child's school fees
+    },
   },
   {
     phoneNumber: '+919876500002',
@@ -48,12 +53,33 @@ const USERS = [
     incomeMaxPerDay: 800,
     workDaysPerWeek: 6,
     icon: '👷',
+    fixedExpenses: {
+      rentAmount: 8000,  // Lower rent in Delhi (shared accommodation)
+      emiAmount: 0,      // No EMI (no vehicle loan)
+      schoolFeesAmount: 2000, // Lower school fees
+    },
+  },
+  {
+    phoneNumber: '+919876500003',
+    name: 'Vivek',
+    personaType: 'gig_worker' as const,
+    city: 'Bangalore',
+    occupation: 'IT Professional',
+    incomeMinPerDay: 2000,
+    incomeMaxPerDay: 3000,
+    workDaysPerWeek: 5,
+    icon: '💻',
+    fixedExpenses: {
+      rentAmount: 15000, // Higher rent in Bangalore IT hub
+      emiAmount: 8000,   // Car EMI
+      schoolFeesAmount: 5000, // Higher school fees for better education
+    },
   },
 ];
 
 async function seed() {
   console.log('🌱 Starting database seed...');
-  console.log('📋 Seeding data for 2 users: Ravi (Gig Worker) and Ramesh (Daily Wage Worker)');
+  console.log('📋 Seeding data for 3 users: Ravi (Gig Worker), Ramesh (Daily Wage Worker), and Vivek (IT Professional)');
 
   const app = await NestFactory.createApplicationContext(AppModule);
   
@@ -101,11 +127,7 @@ async function seed() {
         incomeMinPerDay: userDef.incomeMinPerDay,
         incomeMaxPerDay: userDef.incomeMaxPerDay,
         workDaysPerWeek: userDef.workDaysPerWeek,
-        fixedExpenses: {
-          rentAmount: 10000, // Fixed amount: ₹10,000/month
-          emiAmount: 5000,   // Fixed amount: ₹5,000/month
-          schoolFeesAmount: 3000, // Fixed amount: ₹3,000/month
-        },
+        fixedExpenses: userDef.fixedExpenses,
       });
       profiles.push(profile);
       console.log(`  ✓ Created profile for ${userDef.name}`);
@@ -127,8 +149,10 @@ async function seed() {
     // Different merchants/sources based on persona type
     const gigWorkerMerchants = ['Swiggy', 'Zomato', 'Ola', 'Uber', 'Amazon', 'DMart'];
     const dailyWageMerchants = ['Local Market', 'Tea Stall', 'Auto Rickshaw', 'Medical Store', 'Kirana Store'];
+    const itProfessionalMerchants = ['Starbucks', 'Cafe Coffee Day', 'Zomato', 'Uber', 'Amazon', 'Flipkart', 'BigBasket', 'Swiggy'];
     const gigWorkerSources = ['Freelance', 'Rides', 'Delivery'];
     const dailyWageSources = ['Daily Wage', 'Construction', 'Labor'];
+    const itProfessionalSources = ['Salary', 'Freelance', 'Consulting'];
 
     const now = new Date();
 
@@ -138,43 +162,94 @@ async function seed() {
       const userDef = USERS[i];
       const transactions = [];
 
-      const merchants = userDef.personaType === 'gig_worker' ? gigWorkerMerchants : dailyWageMerchants;
-      const sources = userDef.personaType === 'gig_worker' ? gigWorkerSources : dailyWageSources;
+      // Determine merchants and sources based on user
+      let merchants: string[];
+      let sources: string[];
+      if (userDef.name === 'Vivek') {
+        merchants = itProfessionalMerchants;
+        sources = itProfessionalSources;
+      } else if (userDef.personaType === 'gig_worker') {
+        merchants = gigWorkerMerchants;
+        sources = gigWorkerSources;
+      } else {
+        merchants = dailyWageMerchants;
+        sources = dailyWageSources;
+      }
 
       // Generate transactions for the last 30 days
       for (let day = 0; day < 30; day++) {
         const transactionDate = subtractDays(now, day);
         
-        // Income transactions (credits) - 1-2 per day
-        const numIncomePerDay = randomInt(1, 2);
-        for (let j = 0; j < numIncomePerDay; j++) {
-          const incomeAmount = randomInt(
-            Math.floor(profile.incomeMinPerDay / numIncomePerDay),
-            Math.floor(profile.incomeMaxPerDay / numIncomePerDay),
-          );
-          
-          const dayStart = new Date(transactionDate);
-          dayStart.setHours(6, 0, 0, 0); // Earlier start for daily wage workers
-          const dayEnd = new Date(transactionDate);
-          dayEnd.setHours(20, 0, 0, 0);
-          
-          transactions.push({
-            userId: user._id,
-            timestamp: randomDate(dayStart, dayEnd),
-            amount: incomeAmount,
-            direction: 'credit',
-            channel: channels[randomInt(0, channels.length - 1)],
-            merchant: null,
-            category: 'Income',
-            source: sources[randomInt(0, sources.length - 1)],
-            rawText: `Received ₹${incomeAmount} via ${channels[randomInt(0, channels.length - 1)]}`,
-          });
+        // Income transactions (credits) - varies by user type
+        if (userDef.name === 'Vivek') {
+          // IT professionals get monthly salary (1st and 15th of month)
+          const isSalaryDay = day === 0 || day === 15; // Salary on 1st and 15th
+          if (isSalaryDay) {
+            const monthlySalary = (profile.incomeMinPerDay + profile.incomeMaxPerDay) / 2 * 30; // Average monthly
+            const salaryAmount = Math.floor(monthlySalary / 2); // Half monthly salary per payment
+            
+            const salaryDate = new Date(transactionDate);
+            salaryDate.setHours(9, 0, 0, 0);
+            
+            transactions.push({
+              userId: user._id,
+              timestamp: salaryDate,
+              amount: salaryAmount,
+              direction: 'credit',
+              channel: 'Bank Transfer',
+              merchant: null,
+              category: 'Income',
+              source: 'Salary',
+              rawText: `Salary credited: ₹${salaryAmount.toLocaleString('en-IN')}`,
+            });
+          }
+        } else {
+          // Others get 1-2 income transactions per day
+          const numIncomePerDay = randomInt(1, 2);
+          for (let j = 0; j < numIncomePerDay; j++) {
+            const incomeAmount = randomInt(
+              Math.floor(profile.incomeMinPerDay / numIncomePerDay),
+              Math.floor(profile.incomeMaxPerDay / numIncomePerDay),
+            );
+            
+            const dayStart = new Date(transactionDate);
+            dayStart.setHours(6, 0, 0, 0); // Earlier start for daily wage workers
+            const dayEnd = new Date(transactionDate);
+            dayEnd.setHours(20, 0, 0, 0);
+            
+            transactions.push({
+              userId: user._id,
+              timestamp: randomDate(dayStart, dayEnd),
+              amount: incomeAmount,
+              direction: 'credit',
+              channel: channels[randomInt(0, channels.length - 1)],
+              merchant: null,
+              category: 'Income',
+              source: sources[randomInt(0, sources.length - 1)],
+              rawText: `Received ₹${incomeAmount} via ${channels[randomInt(0, channels.length - 1)]}`,
+            });
+          }
         }
 
-        // Expense transactions (debits) - 2-4 per day
-        const numExpensesPerDay = randomInt(2, 4);
+        // Expense transactions (debits) - varies by user type
+        let numExpensesPerDay: number;
+        let expenseAmountMin: number;
+        let expenseAmountMax: number;
+        
+        if (userDef.name === 'Vivek') {
+          // IT professionals have fewer but higher value transactions
+          numExpensesPerDay = randomInt(1, 3);
+          expenseAmountMin = 200;
+          expenseAmountMax = 1500;
+        } else {
+          // Others have 2-4 transactions per day with lower amounts
+          numExpensesPerDay = randomInt(2, 4);
+          expenseAmountMin = 50;
+          expenseAmountMax = 400;
+        }
+        
         for (let j = 0; j < numExpensesPerDay; j++) {
-          const expenseAmount = randomInt(50, 400);
+          const expenseAmount = randomInt(expenseAmountMin, expenseAmountMax);
           
           const expenseDayStart = new Date(transactionDate);
           expenseDayStart.setHours(6, 0, 0, 0);
