@@ -89,9 +89,9 @@ async function seed() {
         incomeMaxPerDay: isGigWorker ? randomInt(1000, 1500) : randomInt(700, 900),
         workDaysPerWeek: randomInt(5, 6),
         fixedExpenses: {
-          rentAmount: randomInt(5000, 15000),
-          emiAmount: randomInt(0, 8000),
-          schoolFeesAmount: randomInt(0, 5000),
+          rentAmount: 10000, // Fixed amount: ₹10,000/month
+          emiAmount: 5000,   // Fixed amount: ₹5,000/month
+          schoolFeesAmount: 3000, // Fixed amount: ₹3,000/month
         },
       });
       profiles.push(profile);

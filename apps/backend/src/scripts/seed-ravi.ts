@@ -76,9 +76,9 @@ async function seedRavi() {
       incomeMaxPerDay: 1200,
       workDaysPerWeek: 5,
       fixedExpenses: {
-        rentAmount: 12000,
-        emiAmount: 5000,
-        schoolFeesAmount: 3000,
+        rentAmount: 10000, // Fixed amount: ₹10,000/month
+        emiAmount: 5000,   // Fixed amount: ₹5,000/month
+        schoolFeesAmount: 3000, // Fixed amount: ₹3,000/month
       },
     });
     console.log('  ✓ Created profile for Ravi');

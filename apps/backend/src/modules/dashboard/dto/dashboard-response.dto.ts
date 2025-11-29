@@ -36,6 +36,9 @@ export class DashboardResponseDto {
   rentAmount: number;
 
   @ApiProperty()
+  schoolFeesAmount: number;
+
+  @ApiProperty()
   projectedShortfall: number;
 
   @ApiProperty({ type: HealthScoreDto })

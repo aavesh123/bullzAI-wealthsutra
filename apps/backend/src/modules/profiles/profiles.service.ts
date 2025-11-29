@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { Profile, ProfileDocument } from '../../schemas/profile.schema';
 import { CreateProfileDto } from './dto/create-profile.dto';
 import { ProfileResponseDto } from './dto/profile-response.dto';
@@ -14,8 +14,10 @@ export class ProfilesService {
   async createOrUpdate(
     createProfileDto: CreateProfileDto,
   ): Promise<ProfileResponseDto> {
+    // Convert string userId to ObjectId for proper querying
+    const userObjectId = new Types.ObjectId(createProfileDto.userId);
     const profile = await this.profileModel.findOneAndUpdate(
-      { userId: createProfileDto.userId },
+      { userId: userObjectId },
       {
         ...createProfileDto,
         fixedExpenses: {
@@ -40,7 +42,9 @@ export class ProfilesService {
   }
 
   async findByUserId(userId: string): Promise<ProfileResponseDto | null> {
-    const profile = await this.profileModel.findOne({ userId });
+    // Convert string userId to ObjectId for proper querying
+    const userObjectId = new Types.ObjectId(userId);
+    const profile = await this.profileModel.findOne({ userId: userObjectId });
     if (!profile) return null;
 
     return {

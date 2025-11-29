@@ -1,5 +1,5 @@
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:4000/api';
-const USER_ID = '692a107c0a294445002f0616';
+const USER_ID = '692a445faadf1ab23c3a1041';
 
 export interface TransactionEvent {
   timestamp: string;
@@ -16,6 +16,9 @@ export interface DashboardResponse {
   incomeTotal: number;
   spendTotal: number;
   byCategory: Record<string, number>;
+  emiAmount: number;
+  rentAmount: number;
+  schoolFeesAmount: number;
   projectedShortfall: number;
   healthScore: {
     score: number;
@@ -77,6 +80,7 @@ export async function getDashboard(): Promise<DashboardResponse> {
     categories: Array<{ category: string; amount: number }>;
     emiAmount: number;
     rentAmount: number;
+    schoolFeesAmount: number;
     projectedShortfall: number;
     healthScore: {
       score: number;
@@ -99,6 +103,9 @@ export async function getDashboard(): Promise<DashboardResponse> {
     incomeTotal: backendData.incomeTotal,
     spendTotal: backendData.spendTotal,
     byCategory,
+    emiAmount: backendData.emiAmount,
+    rentAmount: backendData.rentAmount,
+    schoolFeesAmount: backendData.schoolFeesAmount,
     projectedShortfall: backendData.projectedShortfall,
     healthScore: backendData.healthScore,
   };

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { Transaction, TransactionDocument } from '../../schemas/transaction.schema';
 import { IngestTransactionsDto } from './dto/transaction-event.dto';
 import { TransactionResponseDto } from './dto/transaction-response.dto';
@@ -15,8 +15,9 @@ export class TransactionsService {
   async ingest(
     ingestDto: IngestTransactionsDto,
   ): Promise<TransactionResponseDto[]> {
+    const userObjectId = new Types.ObjectId(ingestDto.userId);
     const transactions = ingestDto.events.map((event) => ({
-      userId: ingestDto.userId,
+      userId: userObjectId,
       timestamp: new Date(event.timestamp),
       amount: event.amount,
       direction: event.direction,
@@ -47,8 +48,9 @@ export class TransactionsService {
     userId: string,
     limit: number = 100,
   ): Promise<TransactionResponseDto[]> {
+    const userObjectId = new Types.ObjectId(userId);
     const transactions = await this.transactionModel
-      .find({ userId })
+      .find({ userId: userObjectId })
       .sort({ timestamp: -1 })
       .limit(limit);
 
@@ -70,12 +72,13 @@ export class TransactionsService {
     userId: string,
     days: number = 7,
   ): Promise<TransactionDocument[]> {
+    const userObjectId = new Types.ObjectId(userId);
     const startDate = new Date();
     startDate.setDate(startDate.getDate() - days);
 
     return this.transactionModel
       .find({
-        userId,
+        userId: userObjectId,
         timestamp: { $gte: startDate },
       })
       .sort({ timestamp: -1 });

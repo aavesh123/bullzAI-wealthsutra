@@ -47,6 +47,7 @@ export class DashboardService {
     // Get fixed expenses
     const emiAmount = profile?.fixedExpenses?.emiAmount || 0;
     const rentAmount = profile?.fixedExpenses?.rentAmount || 0;
+    const schoolFeesAmount = profile?.fixedExpenses?.schoolFeesAmount || 0;
 
     // Calculate projected shortfall (simple: average daily spend * 30 - average daily income * 30)
     const days = 7;
@@ -56,7 +57,7 @@ export class DashboardService {
     const projectedMonthlyIncome = avgDailyIncome * 30;
     const projectedShortfall = Math.max(
       0,
-      projectedMonthlySpend + emiAmount + rentAmount - projectedMonthlyIncome,
+      projectedMonthlySpend + emiAmount + rentAmount + schoolFeesAmount - projectedMonthlyIncome,
     );
 
     // Calculate health score (simple rule-based)
@@ -72,6 +73,7 @@ export class DashboardService {
       categories,
       emiAmount,
       rentAmount,
+      schoolFeesAmount,
       projectedShortfall,
       healthScore,
     };
@@ -93,18 +95,26 @@ export class DashboardService {
     const savingsRate = (income - spend) / income;
     let score = 50;
 
-    // Adjust based on savings rate
+    // Adjust based on savings rate (more nuanced)
     if (savingsRate > 0.2) {
-      score += 30;
+      score += 30; // Excellent savings rate
     } else if (savingsRate > 0.1) {
-      score += 15;
+      score += 15; // Good savings rate
+    } else if (savingsRate > 0.05) {
+      score += 5; // Modest savings rate
+    } else if (savingsRate < -0.5) {
+      score -= 40; // Spending exceeds income by more than 50%
     } else if (savingsRate < 0) {
-      score -= 30;
+      score -= 25; // Spending exceeds income
+    } else if (savingsRate < 0.05) {
+      score -= 5; // Very low savings rate
     }
 
-    // Adjust based on shortfall
+    // Adjust based on shortfall (capped to prevent score going too low)
     if (shortfall > 0) {
-      score -= Math.min(30, shortfall / 1000);
+      // Use logarithmic scale for shortfall penalty to prevent extreme penalties
+      const shortfallPenalty = Math.min(25, Math.log10(shortfall / 1000 + 1) * 10);
+      score -= shortfallPenalty;
     }
 
     score = Math.max(0, Math.min(100, score));

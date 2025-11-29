@@ -58,6 +58,42 @@ export default function Dashboard() {
           <div>
             <StatsCards dashboard={dashboard()!} />
 
+            {/* Fixed Expenses */}
+            <div class="bg-white rounded-lg shadow p-6 mb-6">
+              <h2 class="text-xl font-semibold text-gray-900 mb-4">Fixed Monthly Expenses</h2>
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {dashboard()!.rentAmount > 0 && (
+                  <div class="bg-blue-50 rounded-lg p-4 border border-blue-200">
+                    <div class="text-sm font-medium text-blue-700 mb-1">Rent</div>
+                    <div class="text-xl font-bold text-blue-900">
+                      ₹{dashboard()!.rentAmount.toLocaleString('en-IN')}/month
+                    </div>
+                  </div>
+                )}
+                {dashboard()!.emiAmount > 0 && (
+                  <div class="bg-purple-50 rounded-lg p-4 border border-purple-200">
+                    <div class="text-sm font-medium text-purple-700 mb-1">EMI</div>
+                    <div class="text-xl font-bold text-purple-900">
+                      ₹{dashboard()!.emiAmount.toLocaleString('en-IN')}/month
+                    </div>
+                  </div>
+                )}
+                {dashboard()!.schoolFeesAmount > 0 && (
+                  <div class="bg-green-50 rounded-lg p-4 border border-green-200">
+                    <div class="text-sm font-medium text-green-700 mb-1">School Fees</div>
+                    <div class="text-xl font-bold text-green-900">
+                      ₹{dashboard()!.schoolFeesAmount.toLocaleString('en-IN')}/month
+                    </div>
+                  </div>
+                )}
+                {(dashboard()!.rentAmount === 0 && dashboard()!.emiAmount === 0 && dashboard()!.schoolFeesAmount === 0) && (
+                  <div class="bg-gray-50 rounded-lg p-4">
+                    <div class="text-sm text-gray-600">No fixed expenses recorded</div>
+                  </div>
+                )}
+              </div>
+            </div>
+
             {/* Category Breakdown */}
             <div class="bg-white rounded-lg shadow p-6 mb-6">
               <h2 class="text-xl font-semibold text-gray-900 mb-4">Spending by Category</h2>
