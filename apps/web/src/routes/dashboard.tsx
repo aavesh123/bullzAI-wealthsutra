@@ -1,12 +1,15 @@
-import { onMount, Show } from 'solid-js';
+import { onMount, Show, createSignal } from 'solid-js';
 import Layout from '../components/Layout';
 import StatsCards from '../components/StatsCards';
 import PlanCard from '../components/PlanCard';
 import CoachCard from '../components/CoachCard';
 import SimulationButtons from '../components/SimulationButtons';
+import TransactionsModal from '../components/TransactionsModal';
 import { dashboard, plan, error, loading, handleDashboardRefresh, clearError } from '../store/dashboardStore';
 
 export default function Dashboard() {
+  const [isTransactionsModalOpen, setIsTransactionsModalOpen] = createSignal(false);
+
   onMount(async () => {
     // Load dashboard data on mount
     handleDashboardRefresh();
@@ -91,7 +94,19 @@ export default function Dashboard() {
             {/* Category Breakdown */}
             <div class="bg-white rounded-lg shadow p-6 mb-6">
               <div class="flex items-center justify-between mb-4">
-                <h2 class="text-xl font-semibold text-gray-900">Spending by Category</h2>
+                <div class="flex items-center gap-3">
+                  <h2 class="text-xl font-semibold text-gray-900">Spending by Category</h2>
+                  {/* View All Button */}
+                  <button
+                    onClick={() => setIsTransactionsModalOpen(true)}
+                    class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors text-sm font-medium flex items-center gap-2"
+                  >
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                    </svg>
+                    View All
+                  </button>
+                </div>
                 <div class="text-lg font-bold text-gray-900">
                   Total: ₹{Object.values(dashboard()!.byCategory).reduce((sum, amount) => sum + amount, 0).toLocaleString('en-IN')}
                 </div>
@@ -126,6 +141,12 @@ export default function Dashboard() {
           </div>
         </Show>
       </div>
+
+      {/* Transactions Modal */}
+      <TransactionsModal
+        isOpen={isTransactionsModalOpen()}
+        onClose={() => setIsTransactionsModalOpen(false)}
+      />
     </Layout>
   );
 }

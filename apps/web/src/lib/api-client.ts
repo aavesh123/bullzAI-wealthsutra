@@ -1,5 +1,5 @@
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:4000/api';
-const USER_ID = '692a445faadf1ab23c3a1041';
+const USER_ID = '692a5764cde700e6dbd58ebb';
 
 export interface TransactionEvent {
   timestamp: string;
@@ -44,6 +44,19 @@ export interface PlanResponse {
   };
   riskLevel: 'low' | 'medium' | 'high';
   shortfallAmount: number;
+}
+
+export interface Transaction {
+  _id: string;
+  userId: string;
+  timestamp: string | Date;
+  amount: number;
+  direction: 'credit' | 'debit';
+  channel: string;
+  merchant: string;
+  category: string;
+  source: string;
+  rawText: string;
 }
 
 async function fetchAPI<T>(endpoint: string, options?: RequestInit): Promise<T> {
@@ -208,5 +221,16 @@ export async function createPlan(
     console.error('Error in createPlan:', error);
     throw error;
   }
+}
+
+export async function getTransactions(limit?: number): Promise<Transaction[]> {
+  const limitParam = limit ? `&limit=${limit}` : '';
+  const transactions = await fetchAPI<Transaction[]>(`/transactions?userId=${USER_ID}${limitParam}`);
+  
+  // Ensure timestamp is properly formatted
+  return transactions.map(t => ({
+    ...t,
+    timestamp: typeof t.timestamp === 'string' ? t.timestamp : new Date(t.timestamp).toISOString(),
+  }));
 }
 
