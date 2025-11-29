@@ -8,10 +8,12 @@ import SimulationButtons from '../components/SimulationButtons';
 import TransactionsModal from '../components/TransactionsModal';
 import { dashboard, plan, error, loading, handleDashboardRefresh, clearError } from '../store/dashboardStore';
 import { currentUser, loadUserFromStorage } from '../store/userStore';
+import { currentTheme } from '../store/themeStore';
 
 export default function Dashboard() {
   const navigate = useNavigate();
   const [isTransactionsModalOpen, setIsTransactionsModalOpen] = createSignal(false);
+  const theme = createMemo(() => currentTheme());
 
   const today = createMemo(
     () =>
@@ -41,11 +43,33 @@ export default function Dashboard() {
         {/* Top hero + actions */}
         <section class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div>
-            <p class="text-xs uppercase tracking-[0.2em] text-slate-500">Overview</p>
-            <h1 class="mt-2 text-2xl font-semibold text-slate-50">
+            <p
+              class="text-xs uppercase tracking-[0.2em]"
+              classList={{
+                'text-slate-500': theme() === 'dark',
+                'text-gray-500': theme() === 'light',
+              }}
+            >
+              Overview
+            </p>
+            <h1
+              class="mt-2 text-2xl font-semibold"
+              classList={{
+                'text-slate-50': theme() === 'dark',
+                'text-gray-900': theme() === 'light',
+              }}
+            >
               Hello, {currentUser()?.name ?? 'there'}
             </h1>
-            <p class="mt-1 text-sm text-slate-400">{today()}</p>
+            <p
+              class="mt-1 text-sm"
+              classList={{
+                'text-slate-400': theme() === 'dark',
+                'text-gray-600': theme() === 'light',
+              }}
+            >
+              {today()}
+            </p>
           </div>
           <div class="w-full lg:w-auto lg:justify-end flex">
             <SimulationButtons />

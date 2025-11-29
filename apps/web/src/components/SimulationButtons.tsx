@@ -86,13 +86,13 @@ export default function SimulationButtons() {
 
   return (
     <div class="mt-4 inline-flex flex-wrap gap-2 rounded-2xl bg-slate-900/90 border border-slate-700 px-2 py-2 backdrop-blur shadow-[0_18px_45px_rgba(15,23,42,0.85)]">
-      <button
+      {/* <button
         onClick={handleSimulateWeek}
         disabled={simulating() || buildingPlan()}
         class="px-5 py-2.5 rounded-xl text-[13px] font-semibold text-white bg-gradient-to-r from-[#f97316] to-[#ec4899] shadow-lg shadow-orange-500/40 disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
       >
         {simulating() ? 'Simulating...' : 'Simulate last 7 days'}
-      </button>
+      </button> */}
 
       <button
         onClick={handleBuildPlan}
