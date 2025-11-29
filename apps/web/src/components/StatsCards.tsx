@@ -13,7 +13,7 @@ export default function StatsCards(props: StatsCardsProps) {
 
   // Use createMemo to make dashboardData reactive
   const dashboardData = createMemo(() => props.dashboard());
-  
+
   // Calculate monthly savings - make it reactive with createMemo
   const monthlySavings = createMemo(() => {
     const data = dashboardData();
@@ -24,69 +24,95 @@ export default function StatsCards(props: StatsCardsProps) {
     const projectedMonthlyIncome = avgDailyIncome * 30;
     const projectedMonthlySpend = avgDailySpend * 30;
     const fixedMonthlyExpenses = data.emiAmount + data.rentAmount + data.schoolFeesAmount;
-    
+
     return projectedMonthlyIncome - projectedMonthlySpend - fixedMonthlyExpenses;
   });
 
   const getHealthScoreColor = (score: number) => {
-    if (score >= 70) return 'text-green-600 bg-green-100';
-    if (score >= 40) return 'text-yellow-600 bg-yellow-100';
-    return 'text-red-600 bg-red-100';
+    if (score >= 70) return 'text-emerald-300 bg-emerald-500/20';
+    if (score >= 40) return 'text-amber-300 bg-amber-500/20';
+    return 'text-red-300 bg-red-500/20';
   };
 
   return (
     <Show when={dashboardData()}>
       {(data) => (
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-          {/* Total Income */}
-          <div class="bg-white rounded-lg shadow p-6">
-            <div class="text-sm font-medium text-gray-600 mb-2">Total Income (7 days)</div>
-            <div class="text-2xl font-bold text-green-600">{formatCurrency(data().incomeTotal)}</div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 mt-6">
+          {/* Total Income (7 days) */}
+          <div class="relative overflow-hidden rounded-[18px] px-5 py-4 border border-white/10 bg-gradient-to-br from-[#f97316] via-[#ec4899] to-[#6366f1] shadow-[0_18px_45px_rgba(248,113,113,0.45)]">
+            <div class="flex items-center gap-2 mb-2">
+              <div class="text-[13px] text-white/80">Total Income (7 days)</div>
+            </div>
+            <div class="text-[20px] font-semibold text-white">{formatCurrency(data().incomeTotal)}</div>
           </div>
+
           {/* Projected Monthly Income */}
-          <div class="bg-white rounded-lg shadow p-6">
-            <div class="text-sm font-medium text-gray-600 mb-2">Projected Monthly Income</div>
-            <div class="text-2xl font-bold text-green-600">{formatCurrency((data().incomeTotal/7) * 30)}</div>
+          <div class="relative overflow-hidden rounded-[18px] px-5 py-4 border border-white/10 bg-gradient-to-br from-[#22c55e] via-[#4ade80] to-[#38bdf8] shadow-[0_18px_45px_rgba(34,197,94,0.35)]">
+            <div class="flex items-center gap-2 mb-2">
+              <div class="text-[13px] text-white/80">Projected Monthly Income</div>
+            </div>
+            <div class="text-[20px] font-semibold text-white">
+              {formatCurrency((data().incomeTotal / 7) * 30)}
+            </div>
           </div>
 
-          {/* Total Spend */}
-          <div class="bg-white rounded-lg shadow p-6">
-            <div class="text-sm font-medium text-gray-600 mb-2">Category Spending Total (7 days)</div>
-            <div class="text-2xl font-bold text-red-600">{formatCurrency(data().spendTotal)}</div>
+          {/* Category Spending Total (7 days) */}
+          <div class="rounded-[18px] px-5 py-4 border border-white/10 bg-[#020617]/80 shadow-[0_18px_45px_rgba(15,23,42,0.75)]">
+            <div class="flex items-center gap-2 mb-2">
+              <div class="text-[13px] text-slate-400">Category Spending Total (7 days)</div>
+            </div>
+            <div class="text-[20px] font-semibold text-slate-50">
+              {formatCurrency(data().spendTotal)}
+            </div>
           </div>
+
           {/* Projected Monthly Category Spend */}
-          <div class="bg-white rounded-lg shadow p-6">        
-            <div class="text-sm font-medium text-gray-600 mb-2">Projected Monthly Category Spend</div>
-            <div class="text-2xl font-bold text-red-600">{formatCurrency(data().spendTotal/7 * 30)}</div>
+          <div class="rounded-[18px] px-5 py-4 border border-white/10 bg-[#020617]/80 shadow-[0_18px_45px_rgba(15,23,42,0.75)]">
+            <div class="flex items-center gap-2 mb-2">
+              <div class="text-[13px] text-slate-400">Projected Monthly Category Spend</div>
+            </div>
+            <div class="text-[20px] font-semibold text-slate-50">
+              {formatCurrency((data().spendTotal / 7) * 30)}
+            </div>
           </div>
 
-          {/* Projected Shortfall */}
-          <div class="bg-white rounded-lg shadow p-6">
-            <div class="text-sm font-medium text-gray-600 mb-2">Projected Shortfall (30 days)</div>
-            <div class={`text-2xl font-bold ${data().projectedShortfall > 0 ? 'text-red-600' : 'text-green-600'}`}>
+          {/* Projected Shortfall (30 days) */}
+          <div class="rounded-[18px] px-5 py-4 border border-red-500/50 bg-red-500/10 shadow-[0_18px_45px_rgba(248,113,113,0.65)]">
+            <div class="flex items-center gap-2 mb-2">
+              <div class="text-[13px] text-red-100/80">Projected Shortfall (30 days)</div>
+            </div>
+            <div class="text-[20px] font-semibold text-red-100">
               {formatCurrency(Math.abs(data().projectedShortfall))}
             </div>
           </div>
 
-          {/* Monthly Savings */}
-          <div class="bg-white rounded-lg shadow p-6">
-            <div class="text-sm font-medium text-gray-600 mb-2">Monthly Savings (Projected)</div>
-            <div class={`text-2xl font-bold ${monthlySavings() >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+          {/* Monthly Savings (Projected) */}
+          <div class="rounded-[18px] px-5 py-4 border border-white/10 bg-[#020617]/80 shadow-[0_18px_45px_rgba(15,23,42,0.75)]">
+            <div class="flex items-center gap-2 mb-2">
+              <div class="text-[13px] text-slate-400">Monthly Savings (Projected)</div>
+            </div>
+            <div
+              class={`text-[20px] font-semibold ${
+                monthlySavings() >= 0 ? 'text-emerald-300' : 'text-red-300'
+              }`}
+            >
               {formatCurrency(monthlySavings())}
             </div>
-            <div class="text-xs text-gray-500 mt-1">
+            <div class="text-[11px] text-slate-400 mt-1">
               {monthlySavings() >= 0 ? 'Positive savings' : 'Negative savings (shortfall)'}
             </div>
           </div>
 
-          {/* Health Score */}
-          <div class="bg-white rounded-lg shadow p-6">
-            <div class="text-sm font-medium text-gray-600 mb-2">Wealth Score</div>
-            <div class="flex items-center gap-2">
-              <div class={`text-2xl font-bold ${getHealthScoreColor(data().healthScore.score)} px-3 py-1 rounded`}>
-                {data().healthScore.score}
+          {/* Wealth Score */}
+          <div class="rounded-[18px] px-5 py-4 border border-[#facc15]/60 bg-[#020617]/80 shadow-[0_18px_45px_rgba(250,204,21,0.35)]">
+            <div class="flex items-center gap-2 mb-2">
+              <div class="text-[13px] text-slate-400">Wealth Score</div>
+            </div>
+            <div class="flex items-center gap-3">
+              <div class={`text-[20px] font-semibold px-3 py-1 rounded-full ${getHealthScoreColor(data().healthScore.score)}`}>
+                {data().healthScore.score.toFixed(2)}
               </div>
-              <div class="text-sm text-gray-600">{data().healthScore.label}</div>
+              <div class="text-[13px] text-slate-200">{data().healthScore.label}</div>
             </div>
           </div>
         </div>

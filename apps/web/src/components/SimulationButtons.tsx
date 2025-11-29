@@ -85,33 +85,30 @@ export default function SimulationButtons() {
   };
 
   return (
-    <div class="bg-white rounded-lg shadow p-6 mb-6">
-      <h2 class="text-xl font-semibold text-gray-900 mb-4">Simulation Actions</h2>
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <button
-          onClick={handleSimulateWeek}
-          disabled={simulating() || buildingPlan()}
-          class="px-4 py-3 bg-primary-600 text-white rounded-lg font-medium hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-        >
-          {simulating() ? 'Simulating...' : 'Simulate last 7 days'}
-        </button>
+    <div class="mt-4 inline-flex flex-wrap gap-2 rounded-2xl bg-white/5 border border-white/10 px-2 py-2 backdrop-blur shadow-[0_18px_45px_rgba(15,23,42,0.75)]">
+      <button
+        onClick={handleSimulateWeek}
+        disabled={simulating() || buildingPlan()}
+        class="px-5 py-2.5 rounded-xl text-[13px] font-semibold text-white bg-gradient-to-r from-[#f97316] to-[#ec4899] shadow-lg shadow-orange-500/40 disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
+      >
+        {simulating() ? 'Simulating...' : 'Simulate last 7 days'}
+      </button>
 
-        <button
-          onClick={handleBuildPlan}
-          disabled={simulating() || buildingPlan()}
-          class="px-4 py-3 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-        >
-          {buildingPlan() ? 'Building...' : 'Build my plan'}
-        </button>
+      <button
+        onClick={handleBuildPlan}
+        disabled={simulating() || buildingPlan()}
+        class="px-5 py-2.5 rounded-xl text-[13px] font-semibold text-slate-100 bg-white/5 border border-white/15 hover:bg-white/10 disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
+      >
+        {buildingPlan() ? 'Building...' : 'Build my plan'}
+      </button>
 
-        <button
-          onClick={handleSimulateRepair}
-          disabled={simulating() || buildingPlan()}
-          class="px-4 py-3 bg-orange-600 text-white rounded-lg font-medium hover:bg-orange-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-        >
-          {simulating() ? 'Simulating...' : 'Simulate big repair ₹1800'}
-        </button>
-      </div>
+      <button
+        onClick={handleSimulateRepair}
+        disabled={simulating() || buildingPlan()}
+        class="px-5 py-2.5 rounded-xl text-[13px] font-semibold text-orange-200 bg-[#1f2937] border border-orange-400/60 hover:bg-[#111827] disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
+      >
+        {simulating() ? 'Simulating...' : 'Simulate big repair ₹1800'}
+      </button>
     </div>
   );
 }
