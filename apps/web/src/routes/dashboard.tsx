@@ -82,7 +82,7 @@ export default function Dashboard() {
             <StatsCards dashboard={dashboard} />
 
             {/* Fixed Expenses */}
-            <div class="mt-4 border border-white/10 rounded-2xl p-6 bg-white/5 shadow-[0_18px_45px_rgba(15,23,42,0.65)]">
+            <div class="mt-4 border border-slate-800 rounded-2xl p-6 bg-slate-950/80 shadow-[0_18px_45px_rgba(15,23,42,0.85)]">
               <div class="flex justify-between items-center mb-4">
                 <h2 class="text-[18px] font-semibold text-slate-50">Fixed Monthly Expenses</h2>
                 <span class="text-[16px] font-semibold text-slate-100">
@@ -96,7 +96,7 @@ export default function Dashboard() {
               </div>
               <div class="grid grid-cols-3 gap-4">
                 {dashboard()!.rentAmount > 0 && (
-                  <div class="bg-white/5 border border-white/10 rounded-[12px] p-4">
+                  <div class="bg-slate-900/80 border border-slate-700 rounded-[12px] p-4">
                     <div class="text-[13px] text-slate-400 mb-1">Rent</div>
                     <div class="text-[16px] font-semibold text-slate-50">
                       ₹{dashboard()!.rentAmount.toLocaleString('en-IN')}
@@ -104,7 +104,7 @@ export default function Dashboard() {
                   </div>
                 )}
                 {dashboard()!.emiAmount > 0 && (
-                  <div class="bg-white/5 border border-white/10 rounded-[12px] p-4">
+                  <div class="bg-slate-900/80 border border-slate-700 rounded-[12px] p-4">
                     <div class="text-[13px] text-slate-400 mb-1">EMI</div>
                     <div class="text-[16px] font-semibold text-slate-50">
                       ₹{dashboard()!.emiAmount.toLocaleString('en-IN')}
@@ -112,7 +112,7 @@ export default function Dashboard() {
                   </div>
                 )}
                 {dashboard()!.schoolFeesAmount > 0 && (
-                  <div class="bg-white/5 border border-white/10 rounded-[12px] p-4">
+                  <div class="bg-slate-900/80 border border-slate-700 rounded-[12px] p-4">
                     <div class="text-[13px] text-slate-400 mb-1">School Fees</div>
                     <div class="text-[16px] font-semibold text-slate-50">
                       ₹{dashboard()!.schoolFeesAmount.toLocaleString('en-IN')}
@@ -122,7 +122,7 @@ export default function Dashboard() {
                 {dashboard()!.rentAmount === 0 &&
                   dashboard()!.emiAmount === 0 &&
                   dashboard()!.schoolFeesAmount === 0 && (
-                    <div class="bg-white/5 border border-white/10 rounded-[12px] p-4 col-span-3">
+                    <div class="bg-slate-900/80 border border-slate-700 rounded-[12px] p-4 col-span-3">
                       <div class="text-[13px] text-slate-400">No fixed expenses recorded</div>
                     </div>
                   )}
@@ -130,7 +130,7 @@ export default function Dashboard() {
             </div>
 
             {/* Category Breakdown */}
-            <div class="mt-4 border border-white/10 rounded-2xl p-6 bg-white/5 shadow-[0_18px_45px_rgba(15,23,42,0.65)]">
+            <div class="mt-4 border border-slate-800 rounded-2xl p-6 bg-slate-950/80 shadow-[0_18px_45px_rgba(15,23,42,0.85)]">
               <div class="flex justify-between items-center mb-4">
                 <div class="flex items-center gap-3">
                   <h2 class="text-[18px] font-semibold text-slate-50">Spending by Category</h2>
@@ -159,7 +159,7 @@ export default function Dashboard() {
               </div>
               <div class="grid grid-cols-3 gap-4">
                 {Object.entries(dashboard()!.byCategory).map(([category, amount]) => (
-                  <div class="bg-white/5 border border-white/10 rounded-[12px] p-4">
+                  <div class="bg-slate-900/80 border border-slate-700 rounded-[12px] p-4">
                     <div class="text-[13px] text-slate-400 capitalize mb-1">{category}</div>
                     <div class="text-[16px] font-semibold text-slate-50">
                       ₹{amount.toLocaleString('en-IN')}

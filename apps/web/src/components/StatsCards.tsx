@@ -77,13 +77,23 @@ export default function StatsCards(props: StatsCardsProps) {
           </div>
 
           {/* Projected Shortfall (30 days) */}
-          <div class="rounded-[18px] px-5 py-4 border border-red-500/50 bg-red-500/10 shadow-[0_18px_45px_rgba(248,113,113,0.65)]">
+          <div class="rounded-[18px] px-5 py-4 border border-white/10 bg-[#020617]/80 shadow-[0_18px_45px_rgba(15,23,42,0.85)]">
             <div class="flex items-center gap-2 mb-2">
-              <div class="text-[13px] text-red-100/80">Projected Shortfall (30 days)</div>
+              <div class="text-[13px] text-slate-400">Projected Shortfall (30 days)</div>
             </div>
-            <div class="text-[20px] font-semibold text-red-100">
-              {formatCurrency(Math.abs(data().projectedShortfall))}
-            </div>
+            {(() => {
+              const shortfall = Math.max(0, data().projectedShortfall);
+              const hasShortfall = shortfall > 0;
+              return (
+                <div
+                  class={`text-[20px] font-semibold ${
+                    hasShortfall ? 'text-red-300' : 'text-emerald-300'
+                  }`}
+                >
+                  {formatCurrency(shortfall)}
+                </div>
+              );
+            })()}
           </div>
 
           {/* Monthly Savings (Projected) */}

@@ -85,7 +85,7 @@ export default function SimulationButtons() {
   };
 
   return (
-    <div class="mt-4 inline-flex flex-wrap gap-2 rounded-2xl bg-white/5 border border-white/10 px-2 py-2 backdrop-blur shadow-[0_18px_45px_rgba(15,23,42,0.75)]">
+    <div class="mt-4 inline-flex flex-wrap gap-2 rounded-2xl bg-slate-900/90 border border-slate-700 px-2 py-2 backdrop-blur shadow-[0_18px_45px_rgba(15,23,42,0.85)]">
       <button
         onClick={handleSimulateWeek}
         disabled={simulating() || buildingPlan()}
