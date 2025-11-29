@@ -52,8 +52,8 @@ export default function CoachCard(props: CoachCardProps) {
           <div class="bg-white rounded-lg p-4 shadow-sm">
             <div class="text-sm font-medium text-gray-700 mb-3">Action Items</div>
             <ul class="space-y-2">
-              {messages.nudges.map((nudge, index) => (
-                <li key={index} class="flex items-start gap-2">
+              {messages.nudges.map((nudge) => (
+                <li class="flex items-start gap-2">
                   <span class="text-primary-500 mt-1">✓</span>
                   <span class="text-gray-900">{nudge}</span>
                 </li>

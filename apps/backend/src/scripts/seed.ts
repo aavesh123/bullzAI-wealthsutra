@@ -10,9 +10,6 @@ import { Plan, PlanDocument } from '../schemas/plan.schema';
 import { HealthScoreSnapshot, HealthScoreSnapshotDocument } from '../schemas/health-score.schema';
 import { RiskEvent, RiskEventDocument } from '../schemas/risk-event.schema';
 
-// Helper function to get a random element from an array
-const random = <T>(arr: T[]): T => arr[Math.floor(Math.random() * arr.length)];
-
 // Helper function to get a random number in range
 const randomInt = (min: number, max: number): number => 
   Math.floor(Math.random() * (max - min + 1)) + min;
@@ -28,8 +25,35 @@ const subtractDays = (date: Date, days: number): Date => {
   return result;
 };
 
+// User definitions
+const USERS = [
+  {
+    phoneNumber: '+919876500001',
+    name: 'Ravi',
+    personaType: 'gig_worker' as const,
+    city: 'Mumbai',
+    occupation: 'Swiggy Delivery Partner',
+    incomeMinPerDay: 600,
+    incomeMaxPerDay: 1200,
+    workDaysPerWeek: 5,
+    icon: '🚴',
+  },
+  {
+    phoneNumber: '+919876500002',
+    name: 'Ramesh',
+    personaType: 'daily_wage' as const,
+    city: 'Delhi',
+    occupation: 'Construction Worker',
+    incomeMinPerDay: 400,
+    incomeMaxPerDay: 800,
+    workDaysPerWeek: 6,
+    icon: '👷',
+  },
+];
+
 async function seed() {
   console.log('🌱 Starting database seed...');
+  console.log('📋 Seeding data for 2 users: Ravi (Gig Worker) and Ramesh (Daily Wage Worker)');
 
   const app = await NestFactory.createApplicationContext(AppModule);
   
@@ -52,42 +76,31 @@ async function seed() {
     await planModel.deleteMany({});
     await healthScoreModel.deleteMany({});
     await riskEventModel.deleteMany({});
+    console.log('  ✓ All existing data cleared');
 
-    // Create users
-    console.log('👤 Creating users...');
     const users = [];
-    const phoneNumbers = [
-      '+919876543210',
-      '+919876543211',
-      '+919876543212',
-      '+919876543213',
-      '+919876543214',
-    ];
-    
-    const personaTypes: ('gig_worker' | 'daily_wage')[] = ['gig_worker', 'daily_wage'];
-
-    for (let i = 0; i < phoneNumbers.length; i++) {
-      const user = await userModel.create({
-        phoneNumber: phoneNumbers[i],
-        personaType: random(personaTypes),
-      });
-      users.push(user);
-      console.log(`  ✓ Created user: ${user.phoneNumber} (${user.personaType})`);
-    }
-
-    // Create profiles for each user
-    console.log('📋 Creating profiles...');
-    const cities = ['Mumbai', 'Delhi', 'Bangalore', 'Pune', 'Hyderabad'];
     const profiles = [];
 
-    for (const user of users) {
-      const isGigWorker = user.personaType === 'gig_worker';
+    // Create users and profiles
+    for (const userDef of USERS) {
+      console.log(`\n👤 Creating user: ${userDef.name} (${userDef.occupation})...`);
+      
+      // Create user
+      const user = await userModel.create({
+        phoneNumber: userDef.phoneNumber,
+        personaType: userDef.personaType,
+      });
+      users.push(user);
+      console.log(`  ✓ Created user: ${userDef.name} (${userDef.phoneNumber})`);
+      console.log(`  📝 User ID: ${user._id.toString()}`);
+
+      // Create profile
       const profile = await profileModel.create({
         userId: user._id,
-        city: random(cities),
-        incomeMinPerDay: isGigWorker ? randomInt(500, 800) : randomInt(400, 600),
-        incomeMaxPerDay: isGigWorker ? randomInt(1000, 1500) : randomInt(700, 900),
-        workDaysPerWeek: randomInt(5, 6),
+        city: userDef.city,
+        incomeMinPerDay: userDef.incomeMinPerDay,
+        incomeMaxPerDay: userDef.incomeMaxPerDay,
+        workDaysPerWeek: userDef.workDaysPerWeek,
         fixedExpenses: {
           rentAmount: 10000, // Fixed amount: ₹10,000/month
           emiAmount: 5000,   // Fixed amount: ₹5,000/month
@@ -95,11 +108,11 @@ async function seed() {
         },
       });
       profiles.push(profile);
-      console.log(`  ✓ Created profile for user: ${user.phoneNumber}`);
+      console.log(`  ✓ Created profile for ${userDef.name}`);
     }
 
     // Create transactions for each user
-    console.log('💳 Creating transactions...');
+    console.log('\n💳 Creating transactions...');
     const categories = [
       'Food & Dining',
       'Transport',
@@ -108,172 +121,160 @@ async function seed() {
       'Healthcare',
       'Entertainment',
       'Education',
-      'Insurance',
     ];
-    const channels = ['UPI', 'Cash', 'Bank Transfer', 'Card'];
-    const merchants = [
-      'Swiggy',
-      'Zomato',
-      'Ola',
-      'Uber',
-      'Amazon',
-      'Flipkart',
-      'Reliance Fresh',
-      'DMart',
-      'Apollo Pharmacy',
-      'School Fees',
-    ];
-    const sources = ['Salary', 'Freelance', 'Rides', 'Delivery', 'Other'];
+    const channels = ['UPI', 'Cash', 'Bank Transfer'];
+    
+    // Different merchants/sources based on persona type
+    const gigWorkerMerchants = ['Swiggy', 'Zomato', 'Ola', 'Uber', 'Amazon', 'DMart'];
+    const dailyWageMerchants = ['Local Market', 'Tea Stall', 'Auto Rickshaw', 'Medical Store', 'Kirana Store'];
+    const gigWorkerSources = ['Freelance', 'Rides', 'Delivery'];
+    const dailyWageSources = ['Daily Wage', 'Construction', 'Labor'];
 
     const now = new Date();
-    let totalTransactions = 0;
 
     for (let i = 0; i < users.length; i++) {
       const user = users[i];
       const profile = profiles[i];
-      const userTransactions = [];
+      const userDef = USERS[i];
+      const transactions = [];
+
+      const merchants = userDef.personaType === 'gig_worker' ? gigWorkerMerchants : dailyWageMerchants;
+      const sources = userDef.personaType === 'gig_worker' ? gigWorkerSources : dailyWageSources;
 
       // Generate transactions for the last 30 days
       for (let day = 0; day < 30; day++) {
         const transactionDate = subtractDays(now, day);
         
-        // Income transactions (credits) - 1-3 per day
-        const numIncomePerDay = randomInt(1, 3);
+        // Income transactions (credits) - 1-2 per day
+        const numIncomePerDay = randomInt(1, 2);
         for (let j = 0; j < numIncomePerDay; j++) {
           const incomeAmount = randomInt(
-            profile.incomeMinPerDay / numIncomePerDay,
-            profile.incomeMaxPerDay / numIncomePerDay,
+            Math.floor(profile.incomeMinPerDay / numIncomePerDay),
+            Math.floor(profile.incomeMaxPerDay / numIncomePerDay),
           );
           
           const dayStart = new Date(transactionDate);
-          dayStart.setHours(9, 0, 0, 0);
+          dayStart.setHours(6, 0, 0, 0); // Earlier start for daily wage workers
           const dayEnd = new Date(transactionDate);
-          dayEnd.setHours(18, 0, 0, 0);
+          dayEnd.setHours(20, 0, 0, 0);
           
-          const incomeTransaction = await transactionModel.create({
+          transactions.push({
             userId: user._id,
             timestamp: randomDate(dayStart, dayEnd),
             amount: incomeAmount,
             direction: 'credit',
-            channel: random(channels),
+            channel: channels[randomInt(0, channels.length - 1)],
             merchant: null,
             category: 'Income',
-            source: random(sources),
-            rawText: `Received ${incomeAmount} via ${random(channels)}`,
+            source: sources[randomInt(0, sources.length - 1)],
+            rawText: `Received ₹${incomeAmount} via ${channels[randomInt(0, channels.length - 1)]}`,
           });
-          userTransactions.push(incomeTransaction);
         }
 
-        // Expense transactions (debits) - 2-5 per day
-        const numExpensesPerDay = randomInt(2, 5);
+        // Expense transactions (debits) - 2-4 per day
+        const numExpensesPerDay = randomInt(2, 4);
         for (let j = 0; j < numExpensesPerDay; j++) {
-          const expenseAmount = randomInt(50, 500);
+          const expenseAmount = randomInt(50, 400);
           
           const expenseDayStart = new Date(transactionDate);
-          expenseDayStart.setHours(8, 0, 0, 0);
+          expenseDayStart.setHours(6, 0, 0, 0);
           const expenseDayEnd = new Date(transactionDate);
           expenseDayEnd.setHours(22, 0, 0, 0);
           
-          const expenseTransaction = await transactionModel.create({
+          transactions.push({
             userId: user._id,
             timestamp: randomDate(expenseDayStart, expenseDayEnd),
             amount: expenseAmount,
             direction: 'debit',
-            channel: random(channels),
-            merchant: random(merchants),
-            category: random(categories),
+            channel: channels[randomInt(0, channels.length - 1)],
+            merchant: merchants[randomInt(0, merchants.length - 1)],
+            category: categories[randomInt(0, categories.length - 1)],
             source: null,
-            rawText: `Paid ${expenseAmount} to ${random(merchants)}`,
+            rawText: `Paid ₹${expenseAmount} to ${merchants[randomInt(0, merchants.length - 1)]}`,
           });
-          userTransactions.push(expenseTransaction);
         }
       }
 
-      totalTransactions += userTransactions.length;
-      console.log(`  ✓ Created ${userTransactions.length} transactions for user: ${user.phoneNumber}`);
+      await transactionModel.insertMany(transactions);
+      console.log(`  ✓ Created ${transactions.length} transactions for ${userDef.name}`);
     }
 
     // Create goals for each user
-    console.log('🎯 Creating goals...');
-    const goalTypes: ('emi_payment' | 'rent' | 'emergency_fund' | 'festival_savings')[] = [
-      'emi_payment',
-      'rent',
-      'emergency_fund',
-      'festival_savings',
-    ];
+    console.log('\n🎯 Creating goals...');
+    for (let i = 0; i < users.length; i++) {
+      const user = users[i];
+      const userDef = USERS[i];
+      const goals = [];
+      
+      // EMI Payment goal
+      goals.push(await goalModel.create({
+        userId: user._id,
+        type: 'emi_payment',
+        targetAmount: 5000,
+        targetDate: new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000), // 30 days from now
+        status: 'active',
+      }));
 
-    for (const user of users) {
-      const numGoals = randomInt(1, 3);
-      const selectedGoalTypes = [...goalTypes].sort(() => 0.5 - Math.random()).slice(0, numGoals);
+      // Rent goal
+      goals.push(await goalModel.create({
+        userId: user._id,
+        type: 'rent',
+        targetAmount: 10000,
+        targetDate: new Date(now.getTime() + 15 * 24 * 60 * 60 * 1000), // 15 days from now
+        status: 'active',
+      }));
 
-      for (const goalType of selectedGoalTypes) {
-        const targetAmount = (() => {
-          switch (goalType) {
-            case 'emi_payment':
-              return randomInt(5000, 15000);
-            case 'rent':
-              return randomInt(5000, 20000);
-            case 'emergency_fund':
-              return randomInt(10000, 50000);
-            case 'festival_savings':
-              return randomInt(2000, 10000);
-            default:
-              return 10000;
-          }
-        })();
+      // Emergency fund goal
+      goals.push(await goalModel.create({
+        userId: user._id,
+        type: 'emergency_fund',
+        targetAmount: 25000,
+        targetDate: new Date(now.getTime() + 90 * 24 * 60 * 60 * 1000), // 90 days from now
+        status: 'active',
+      }));
 
-        const targetDate = new Date();
-        targetDate.setMonth(targetDate.getMonth() + randomInt(1, 6));
-
-        await goalModel.create({
-          userId: user._id,
-          type: goalType,
-          targetAmount,
-          targetDate,
-          status: random(['active', 'completed', 'paused']),
-        });
-      }
-      console.log(`  ✓ Created goals for user: ${user.phoneNumber}`);
+      console.log(`  ✓ Created ${goals.length} goals for ${userDef.name}`);
     }
 
-    // Create plans for some users
-    console.log('📅 Creating plans...');
-    const goals = await goalModel.find({ status: 'active' }).limit(3);
-
-    for (let i = 0; i < Math.min(users.length, 3); i++) {
+    // Create plans for each user
+    console.log('\n📅 Creating plans...');
+    for (let i = 0; i < users.length; i++) {
       const user = users[i];
+      const userDef = USERS[i];
       const userGoals = await goalModel.find({ userId: user._id, status: 'active' });
       
       if (userGoals.length > 0) {
         const goal = userGoals[0];
         const startDate = new Date();
-        const endDate = new Date(goal.targetDate);
-        const daysDiff = Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
-        const dailySavingTarget = Math.ceil(goal.targetAmount / daysDiff);
+        const endDate = new Date();
+        endDate.setDate(endDate.getDate() + 30);
 
         await planModel.create({
           userId: user._id,
           goalId: goal._id,
           startDate,
           endDate,
-          dailySavingTarget,
+          dailySavingTarget: 150,
           spendingCaps: {
-            'Food & Dining': randomInt(100, 300),
-            'Transport': randomInt(50, 200),
-            'Shopping': randomInt(200, 500),
+            'Food & Dining': 4500,
+            'Transport': 3000,
+            'Shopping': 2000,
           },
           status: 'active',
         });
-        console.log(`  ✓ Created plan for user: ${user.phoneNumber}`);
+        console.log(`  ✓ Created plan for ${userDef.name}`);
       }
     }
 
     // Create health score snapshots for each user (last 7 days)
-    console.log('💚 Creating health score snapshots...');
-    for (const user of users) {
+    console.log('\n💚 Creating health score snapshots...');
+    for (let i = 0; i < users.length; i++) {
+      const user = users[i];
+      const userDef = USERS[i];
+      
       for (let day = 0; day < 7; day++) {
         const calculatedAt = subtractDays(now, day);
-        const score = randomInt(30, 95);
+        const score = randomInt(45, 75); // Moderate health score
         let label: 'Unstable' | 'Improving' | 'Stable';
         let context: string;
 
@@ -296,47 +297,48 @@ async function seed() {
           context,
         });
       }
-      console.log(`  ✓ Created health score snapshots for user: ${user.phoneNumber}`);
+      console.log(`  ✓ Created 7 health score snapshots for ${userDef.name}`);
     }
 
-    // Create risk events for some users
-    console.log('⚠️  Creating risk events...');
-    const riskLevels: ('low' | 'medium' | 'high')[] = ['low', 'medium', 'high'];
-    const timeframes = ['next week', 'next month', 'next 2 weeks', 'next 3 weeks'];
-
-    for (let i = 0; i < Math.min(users.length, 2); i++) {
+    // Create risk events for each user
+    console.log('\n⚠️  Creating risk events...');
+    for (let i = 0; i < users.length; i++) {
       const user = users[i];
-      const numRisks = randomInt(1, 2);
-
-      for (let j = 0; j < numRisks; j++) {
-        await riskEventModel.create({
-          userId: user._id,
-          riskLevel: random(riskLevels),
-          shortfallAmount: randomInt(1000, 10000),
-          timeframe: random(timeframes),
-        });
-      }
-      console.log(`  ✓ Created risk events for user: ${user.phoneNumber}`);
+      const userDef = USERS[i];
+      
+      await riskEventModel.create({
+        userId: user._id,
+        riskLevel: 'medium',
+        shortfallAmount: randomInt(2000, 5000),
+        timeframe: 'next month',
+      });
+      console.log(`  ✓ Created risk event for ${userDef.name}`);
     }
 
     // Summary
-    const userCount = await userModel.countDocuments();
-    const profileCount = await profileModel.countDocuments();
-    const transactionCount = await transactionModel.countDocuments();
-    const goalCount = await goalModel.countDocuments();
-    const planCount = await planModel.countDocuments();
-    const healthScoreCount = await healthScoreModel.countDocuments();
-    const riskEventCount = await riskEventModel.countDocuments();
-
     console.log('\n✅ Database seed completed!');
     console.log('📊 Summary:');
-    console.log(`   Users: ${userCount}`);
-    console.log(`   Profiles: ${profileCount}`);
-    console.log(`   Transactions: ${transactionCount}`);
-    console.log(`   Goals: ${goalCount}`);
-    console.log(`   Plans: ${planCount}`);
-    console.log(`   Health Score Snapshots: ${healthScoreCount}`);
-    console.log(`   Risk Events: ${riskEventCount}`);
+    for (let i = 0; i < users.length; i++) {
+      const user = users[i];
+      const userDef = USERS[i];
+      const profileCount = await profileModel.countDocuments({ userId: user._id });
+      const transactionCount = await transactionModel.countDocuments({ userId: user._id });
+      const goalCount = await goalModel.countDocuments({ userId: user._id });
+      const planCount = await planModel.countDocuments({ userId: user._id });
+      
+      console.log(`\n   ${userDef.icon} ${userDef.name} (${userDef.occupation}):`);
+      console.log(`      Phone: ${userDef.phoneNumber}`);
+      console.log(`      User ID: ${user._id.toString()}`);
+      console.log(`      Profile: ${profileCount}`);
+      console.log(`      Transactions: ${transactionCount}`);
+      console.log(`      Goals: ${goalCount}`);
+      console.log(`      Plans: ${planCount}`);
+    }
+
+    const totalUserCount = await userModel.countDocuments();
+    const totalTransactionCount = await transactionModel.countDocuments();
+    console.log(`\n   Total Users: ${totalUserCount}`);
+    console.log(`   Total Transactions: ${totalTransactionCount}`);
 
   } catch (error) {
     console.error('❌ Error seeding database:', error);
@@ -355,4 +357,3 @@ seed()
     console.error('\n💥 Seed script failed:', error);
     process.exit(1);
   });
-

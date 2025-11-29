@@ -108,6 +108,10 @@ export class AgentService {
       },
       coach: {
         message: coachOutput.message,
+        summary: coachOutput.summary,
+        riskExplanation: coachOutput.riskExplanation,
+        coachIntro: coachOutput.coachIntro,
+        nudges: coachOutput.nudges,
       },
       risk: {
         riskLevel: riskOutput.riskLevel,

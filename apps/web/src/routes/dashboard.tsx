@@ -1,4 +1,5 @@
 import { onMount, Show, createSignal } from 'solid-js';
+import { useNavigate } from '@solidjs/router';
 import Layout from '../components/Layout';
 import StatsCards from '../components/StatsCards';
 import PlanCard from '../components/PlanCard';
@@ -6,11 +7,21 @@ import CoachCard from '../components/CoachCard';
 import SimulationButtons from '../components/SimulationButtons';
 import TransactionsModal from '../components/TransactionsModal';
 import { dashboard, plan, error, loading, handleDashboardRefresh, clearError } from '../store/dashboardStore';
+import { loadUserFromStorage } from '../store/userStore';
 
 export default function Dashboard() {
+  const navigate = useNavigate();
   const [isTransactionsModalOpen, setIsTransactionsModalOpen] = createSignal(false);
 
   onMount(async () => {
+    // Load user from storage if available
+    const user = loadUserFromStorage();
+    if (!user) {
+      // No user selected, redirect to home
+      navigate('/');
+      return;
+    }
+    
     // Load dashboard data on mount
     handleDashboardRefresh();
   });

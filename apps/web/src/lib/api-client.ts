@@ -1,5 +1,19 @@
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:4000/api';
-const USER_ID = '692a5764cde700e6dbd58ebb';
+
+// Get current user ID from store
+function getUserId(): string {
+  // Try to get from localStorage first (for SSR compatibility)
+  const stored = typeof window !== 'undefined' ? localStorage.getItem('currentUser') : null;
+  if (stored) {
+    try {
+      const user = JSON.parse(stored);
+      return user.userId;
+    } catch (e) {
+      console.error('Error parsing stored user:', e);
+    }
+  }
+  throw new Error('No user selected. Please select a user first.');
+}
 
 export interface TransactionEvent {
   timestamp: string;
@@ -76,11 +90,29 @@ async function fetchAPI<T>(endpoint: string, options?: RequestInit): Promise<T> 
   return response.json();
 }
 
+export interface UserResponse {
+  userId: string;
+  phoneNumber: string;
+  personaType: 'gig_worker' | 'daily_wage';
+  createdAt: string;
+  updatedAt: string;
+}
+
+export async function createOrGetUser(phoneNumber: string, personaType: 'gig_worker' | 'daily_wage'): Promise<UserResponse> {
+  return fetchAPI<UserResponse>('/users', {
+    method: 'POST',
+    body: JSON.stringify({
+      phoneNumber,
+      personaType,
+    }),
+  });
+}
+
 export async function ingestTransactions(events: TransactionEvent[]): Promise<void> {
   await fetchAPI('/transactions/ingest', {
     method: 'POST',
     body: JSON.stringify({
-      userId: USER_ID,
+      userId: getUserId(),
       events,
     }),
   });
@@ -102,7 +134,7 @@ export async function getDashboard(): Promise<DashboardResponse> {
     };
   }
 
-  const backendData = await fetchAPI<BackendDashboardResponse>(`/dashboard?userId=${USER_ID}`);
+  const backendData = await fetchAPI<BackendDashboardResponse>(`/dashboard?userId=${getUserId()}`);
 
   const byCategory = backendData.categories.reduce<Record<string, number>>((acc, item) => {
     if (!item.category) {
@@ -141,6 +173,10 @@ export async function createPlan(
     };
     coach: {
       message: string;
+      summary: string;
+      riskExplanation: string;
+      coachIntro: string;
+      nudges: string[];
     };
     risk: {
       riskLevel: 'low' | 'medium' | 'high';
@@ -153,7 +189,7 @@ export async function createPlan(
     const backendResponse = await fetchAPI<BackendPlanResponse>('/agent/plan', {
       method: 'POST',
       body: JSON.stringify({
-        userId: USER_ID,
+        userId: getUserId(),
         trigger,
       }),
     });
@@ -192,6 +228,36 @@ export async function createPlan(
   // Ensure spending caps is an object
   const spendingCaps = backendResponse.plan.spendingCaps || {};
 
+  // Get top categories from spending caps for fallback nudges
+  const topCategories = Object.keys(spendingCaps);
+  const topCategory1 = topCategories[0];
+  const topCategory2 = topCategories[1];
+  const topCategory3 = topCategories[2];
+
+  // Build fallback nudges with specific category names
+  const buildFallbackNudges = (): string[] => {
+    const nudges: string[] = [
+      `Save ₹${backendResponse.plan.dailySavingTarget || 0} daily to meet your goals`,
+    ];
+    
+    if (topCategory1) {
+      const cap1 = spendingCaps[topCategory1];
+      nudges.push(`Keep ${topCategory1} spending under ₹${cap1.toLocaleString('en-IN')}/month`);
+    }
+    
+    if (topCategory2) {
+      const cap2 = spendingCaps[topCategory2];
+      nudges.push(`Monitor ${topCategory2} expenses (limit: ₹${cap2.toLocaleString('en-IN')}/month)`);
+    } else if (topCategory3) {
+      const cap3 = spendingCaps[topCategory3];
+      nudges.push(`Track ${topCategory3} spending (limit: ₹${cap3.toLocaleString('en-IN')}/month)`);
+    } else {
+      nudges.push(`Review your spending patterns weekly`);
+    }
+    
+    return nudges;
+  };
+
   // Transform to frontend format
   const transformedPlan = {
     plan: {
@@ -203,14 +269,10 @@ export async function createPlan(
       endDate,
     },
     messages: {
-      summary: `Your financial plan has been created. Daily saving target is ₹${backendResponse.plan.dailySavingTarget || 0}.`,
-      riskExplanation: `Your risk level is ${backendResponse.risk?.riskLevel || 'unknown'}. Projected shortfall: ₹${(backendResponse.risk?.shortfallAmount || 0).toLocaleString('en-IN')} in the ${backendResponse.risk?.timeframe || 'upcoming period'}.`,
-      coachIntro: backendResponse.coach?.message || 'No message available.',
-      nudges: [
-        `Save ₹${backendResponse.plan.dailySavingTarget || 0} daily`,
-        `Monitor spending in top categories`,
-        `Track progress weekly`,
-      ],
+      summary: backendResponse.coach?.summary || `Your financial plan has been created. Daily saving target is ₹${backendResponse.plan.dailySavingTarget || 0}.`,
+      riskExplanation: backendResponse.coach?.riskExplanation || `Your risk level is ${backendResponse.risk?.riskLevel || 'unknown'}. Projected shortfall: ₹${(backendResponse.risk?.shortfallAmount || 0).toLocaleString('en-IN')} in the ${backendResponse.risk?.timeframe || 'upcoming period'}.`,
+      coachIntro: backendResponse.coach?.coachIntro || backendResponse.coach?.message || 'No message available.',
+      nudges: backendResponse.coach?.nudges || buildFallbackNudges(),
     },
     riskLevel: backendResponse.risk?.riskLevel || 'low',
     shortfallAmount: backendResponse.risk?.shortfallAmount || 0,
@@ -225,7 +287,7 @@ export async function createPlan(
 
 export async function getTransactions(limit?: number): Promise<Transaction[]> {
   const limitParam = limit ? `&limit=${limit}` : '';
-  const transactions = await fetchAPI<Transaction[]>(`/transactions?userId=${USER_ID}${limitParam}`);
+  const transactions = await fetchAPI<Transaction[]>(`/transactions?userId=${getUserId()}${limitParam}`);
   
   // Ensure timestamp is properly formatted
   return transactions.map(t => ({
