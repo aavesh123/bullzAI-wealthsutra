@@ -25,6 +25,13 @@ export const AVAILABLE_USERS: Omit<User, 'userId'>[] = [
     icon: '👷',
     personaType: 'daily_wage',
   },
+  {
+    phoneNumber: '+919876500003',
+    name: 'Vivek',
+    occupation: 'IT Professional',
+    icon: '💻',
+    personaType: 'gig_worker',
+  },
 ];
 
 export const [currentUser, setCurrentUser] = createSignal<User | null>(null);

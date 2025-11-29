@@ -36,11 +36,32 @@ export class CoachAgent {
       plannerOutput,
     );
 
+    // Calculate monthly savings
+    const avgDailyIncome = analystOutput.incomeSummary.avgDaily;
+    const avgDailySpend = analystOutput.spendingSummary.avgDaily;
+    const fixedMonthlyExpenses = context.profile.fixedExpenses.rentAmount + 
+                                 context.profile.fixedExpenses.emiAmount + 
+                                 context.profile.fixedExpenses.schoolFeesAmount;
+    const projectedMonthlyIncome = avgDailyIncome * 30;
+    const projectedMonthlySpend = avgDailySpend * 30;
+    const monthlySavings = projectedMonthlyIncome - projectedMonthlySpend - fixedMonthlyExpenses;
+
     // Generate structured response
-    const systemPrompt = `You are a friendly financial coach for irregular-income workers in India.
+    const investmentGuidance = monthlySavings > 0 
+      ? `IMPORTANT: The user has positive monthly savings of approximately ₹${Math.round(monthlySavings).toLocaleString('en-IN')}. 
+      You MUST include investment suggestions in your nudges, such as:
+      - SIP (Systematic Investment Plan) recommendations based on savings amount
+      - Mutual fund suggestions (₹${Math.round(monthlySavings * 0.3).toLocaleString('en-IN')}-${Math.round(monthlySavings * 0.5).toLocaleString('en-IN')} per month)
+      - Emergency fund building
+      - Long-term wealth creation strategies
+      Mention specific amounts based on their savings.`
+      : `The user has negative or zero savings. Focus on expense reduction and building emergency fund first.`;
+
+    const systemPrompt = `You are a friendly financial coach for workers in India (including irregular-income workers and salaried professionals).
 Provide simple, encouraging advice in plain language.
 Focus on practical tips for saving money and managing expenses.
 Always mention specific spending categories by name when giving advice.
+${investmentGuidance}
 Output a JSON object with the following structure:
 {
   "summary": "A brief 1-2 sentence summary of the financial plan",
@@ -48,7 +69,8 @@ Output a JSON object with the following structure:
   "coachIntro": "A personalized 2-3 sentence introduction message as a financial coach",
   "nudges": ["First actionable nudge mentioning specific categories", "Second nudge", "Third nudge"]
 }
-Each nudge should be specific and mention the actual top spending categories by name.`;
+Each nudge should be specific and mention the actual top spending categories by name.
+${monthlySavings > 0 ? 'Include at least one investment/SIP suggestion in the nudges with specific amounts.' : ''}`;
 
     const structuredResponse = await this.openAIClient.generateStructuredResponse<StructuredCoachResponse>(
       contextString,
@@ -59,9 +81,18 @@ Each nudge should be specific and mention the actual top spending categories by 
     if (!structuredResponse) {
       const message = await this.openAIClient.generateCoachMessage(contextString);
       
+      // Calculate monthly savings for fallback
+      const avgDailyIncome = analystOutput.incomeSummary.avgDaily;
+      const avgDailySpend = analystOutput.spendingSummary.avgDaily;
+      const fixedMonthlyExpenses = context.profile.fixedExpenses.rentAmount + 
+                                   context.profile.fixedExpenses.emiAmount + 
+                                   context.profile.fixedExpenses.schoolFeesAmount;
+      const projectedMonthlyIncome = avgDailyIncome * 30;
+      const projectedMonthlySpend = avgDailySpend * 30;
+      const monthlySavings = projectedMonthlyIncome - projectedMonthlySpend - fixedMonthlyExpenses;
+
       // Get top categories for fallback nudges
       const topCategories = analystOutput.spendingSummary.topCategories;
-      const topCategoryNames = topCategories.map(c => c.category);
       const topCategory1 = topCategories[0]?.category || 'your top spending category';
       const topCategory2 = topCategories[1]?.category;
       const topCategory3 = topCategories[2]?.category;
@@ -81,7 +112,11 @@ Each nudge should be specific and mention the actual top spending categories by 
         }
       }
       
-      if (topCategory2) {
+      // Add investment suggestions if there are savings
+      if (monthlySavings > 0) {
+        const sipAmount = Math.round(monthlySavings * 0.4); // 40% of savings for SIP
+        nudges.push(`Start a SIP of ₹${sipAmount.toLocaleString('en-IN')}/month in equity mutual funds to grow your savings`);
+      } else if (topCategory2) {
         const category2Amount = topCategories[1].amount;
         nudges.push(`Track ${topCategory2} expenses (₹${category2Amount.toLocaleString('en-IN')} recently)`);
       } else if (topCategory3) {
@@ -130,6 +165,16 @@ Each nudge should be specific and mention the actual top spending categories by 
       .map(([category, cap]) => `- ${category}: ₹${cap.toLocaleString('en-IN')}/month limit`)
       .join('\n');
 
+    // Calculate monthly savings
+    const avgDailyIncome = analystOutput.incomeSummary.avgDaily;
+    const avgDailySpend = analystOutput.spendingSummary.avgDaily;
+    const fixedMonthlyExpenses = context.profile.fixedExpenses.rentAmount + 
+                                 context.profile.fixedExpenses.emiAmount + 
+                                 context.profile.fixedExpenses.schoolFeesAmount;
+    const projectedMonthlyIncome = avgDailyIncome * 30;
+    const projectedMonthlySpend = avgDailySpend * 30;
+    const monthlySavings = projectedMonthlyIncome - projectedMonthlySpend - fixedMonthlyExpenses;
+
     return `User Financial Situation:
 
 INCOME:
@@ -160,13 +205,25 @@ NEW PLAN:
 - Spending caps set:
 ${spendingCapsDetails}
 
+MONTHLY SAVINGS ANALYSIS:
+- Projected monthly income: ₹${projectedMonthlyIncome.toLocaleString('en-IN')}
+- Projected monthly spending: ₹${projectedMonthlySpend.toLocaleString('en-IN')}
+- Fixed monthly expenses: ₹${fixedMonthlyExpenses.toLocaleString('en-IN')}
+- Estimated monthly savings: ₹${Math.round(monthlySavings).toLocaleString('en-IN')}
+${monthlySavings > 0 ? `- Savings available for investment: ₹${Math.round(monthlySavings).toLocaleString('en-IN')}/month` : '- No savings available (focus on expense reduction)'}
+
 INSTRUCTIONS:
 Generate personalized financial coaching messages that:
 1. Mention the specific top spending categories by name (${analystOutput.spendingSummary.topCategories.map(c => c.category).join(', ')})
 2. Reference actual amounts where relevant
 3. Provide actionable, specific advice
 4. Be encouraging and supportive
-5. Focus on the categories where they spend the most`;
+5. Focus on the categories where they spend the most
+${monthlySavings > 0 ? `6. CRITICAL: Since they have ₹${Math.round(monthlySavings).toLocaleString('en-IN')}/month in savings, you MUST suggest:
+   - SIP (Systematic Investment Plan) of ₹${Math.round(monthlySavings * 0.3).toLocaleString('en-IN')}-${Math.round(monthlySavings * 0.5).toLocaleString('en-IN')}/month in mutual funds
+   - Building emergency fund with remaining savings
+   - Long-term wealth creation strategies
+   Include specific investment amounts in your nudges.` : '6. Focus on expense reduction and building emergency fund first.'}`;
   }
 }
 
